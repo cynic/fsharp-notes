@@ -1,0 +1,104 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Programming Without Horsefaeces</title>
+
+   <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
+   <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
+   <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
+   <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
+   <link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
+   <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
+   <link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
+   <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
+   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+   <link rel="icon" type="image/png" href="/favicon-192x192.png" sizes="192x192">
+   <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+   <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+   <meta name="msapplication-TileColor" content="#2d89ef">
+   <meta name="msapplication-TileImage" content="/mstile-144x144.png">
+    
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic|Nunito:700" rel="stylesheet" type="text/css" />
+
+    <link href="impresst.js/impresst.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body class="impress-not-supported">
+<div class="fallback-message">
+    <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+    <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+</div>
+
+<div id="impress">
+
+   <div id="primary" class="step txt">
+      <h1>Functional Programming</h1>
+      <p>The focus of this course is on <em>practical</em> functional programming.  That means that, by the end, you should be able to write programs in a functional <em>style</em> and in a functional <em>language</em>.  What's a <q>functional style</q>?  What's a <q>functional language</q>?  By the end of this course, you should be able to answer those questions.</p>
+
+      <p>You can do functional programming in many <span title="C#, Java, JavaScript, Python, Ruby, ...">modern languages</span>.  However, to learn functional programming, it is worthwhile to use a language which emphasises a functional-first approach; otherwise, it will be very easy to fall into bad old non-functional habits.  We will be using F#, a multi-paradigm language with a functional-first emphasis.</p>
+
+      <p>In functional programming, we use <a href="#functions-part-1">functions</a> to create and transform <a href="#data">data</a>.</p>
+   </div>
+
+    <div id="functions-part-1" class="step txt">
+		<h1>Functions, Part I</h1>
+      <p>A function is something that takes <em>one</em> input and produces <em>one</em> output.  Another way of phrasing the same thing is: a function is something which, when given an input, will produce an output.</p>
+      <p>We'll talk about F# functions later on.  For now, let's consider an abstract function which, when given an integer <code>n</code>, will give back <code>n+5</code>.  In C#, you might have written</p>
+      <pre><code>
+         int AddFive(int n) {
+            return n + 5;
+         }
+      </code></pre>
+      <p>So, if I give <code>8</code> as an input, I'll get back <code>13</code> as the output.  We can write down the essentials of this abstract function as:</p>
+      <pre><code>
+         n -&gt; n + 5
+      </code></pre>
+      <p>On the left side of the <code>-&gt;</code>, we have the <em>input</em>.  On the right side, we have the <em>output</em>.</p>
+      <p>Now, a function is nice, but it does me no good to just have a function sitting around and doing nothing.  I'd like to <em>apply</em> it (in Computer Science, we'd say that I want to <em>call</em> the function), and to do that I must give it an input.  To give this function an input, I'll enclose the function in parentheses, and give it the input just after the parentheses, separated by a space:
+      <pre><code>
+         (n -&gt; n + 5) 8
+      </code></pre>
+      <p>Remember: when a function is given an input, it provides its output.  So the above expression is semantically equivalent to this:
+      <pre><code>
+         13
+      </code></pre>
+      <p>Make sure that you see how this works &mdash; and, especially, make sure that you understand the definition of a <em>function</em>.  Also pay attention to the notation I've been using for an abstract function.  You'll see me using the same notation later on.</p>
+      <p>When you're ready to move on, let's take a look at what <a href="#functions-part-2">a real function looks like in F#</a>.</p>
+    </div>
+
+    <div id="functions-part-2" class="step txt">
+      <h1>Functions, Part II</h1>
+      <p>In F#, here's how you would write down the abstract <code>n -&gt; n + 5</code> function:</p>
+      <pre><code>
+         fun n -&gt; n + 5
+      </code></pre>
+      <p>(Almost the same as the abstract notation, isn't it?)  And here's how you would <em>apply</em> (<span title="I'll use both terms interchangeably">or <em>call</em></span>) a function:</p>
+      <pre><code>
+         (fun n -&gt; n + 5) 8
+      </code></pre>
+      <p>...giving you the result</p>
+      <pre><code>
+         13
+      </code></pre>
+      <p>But don't take my word for it.  Try it out.  Here's a F# console:</p>
+      <div style="min-height:5em;background:black;border-radius:7px;color:green;padding:1ex;font-family:'Nunito';position:relative"># (fun n -&gt; n+5) 8
+      <div style="padding-left:5px;padding-right:5px;border-radius:7px;position:absolute;bottom:2px;right:2px;background:grey;color:black">run</div>
+      </div>
+      <p>Click inside the console to activate it, then type in <code>(fun n -&gt; n+5) 8</code> and click on <q><span title="It's the button at the bottom-right of the console">run</span></q>.  See what the result is.</p>
+      <p>Then type in <code>fun n -&gt; n+5</code> and click on <q>run</q>.  You'll get an interesting result as your output.  <a href="#functions-part-3">Here's what that result means</a>.
+    </div>
+
+<script src="impresst.js/impresst.js"></script>
+<script>
+impress().init();</script>
+
+</body>
+</html>
+
