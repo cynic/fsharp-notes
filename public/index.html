@@ -31,6 +31,18 @@
 </head>
 
 <body class="impress-not-supported">
+
+<!-- the top bar -->
+
+<!--
+<div role="console" style="position:fixed;width:30vw;height:100vh;background:hotpink;padding:1ex;font-family:Nunito;font-size:14pt">
+# (fun n -&gt; n + 5) 8
+<div style="background:pink;padding:8px;border-radius:7px;position:absolute;right:5px;bottom:21px">run</div>
+</div>
+-->
+
+<!-- the actual content -->
+
 <div class="fallback-message">
     <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
     <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
@@ -40,11 +52,40 @@
 
    <div id="primary" class="step txt">
       <h1>Functional Programming</h1>
-      <p>The focus of this course is on <em>practical</em> functional programming.  That means that, by the end, you should be able to write programs in a functional <em>style</em> and in a functional <em>language</em>.  What's a <q>functional style</q>?  What's a <q>functional language</q>?  By the end of this course, you should be able to answer those questions.</p>
+      <p>The focus of this course is on practical functional programming.  That means that, by the end, you should be able to write programs in a <a href="#functional-style">functional <em>style</em></a> and in a <span title="A language which makes it easy to program in a functional <em>style</em>.">functional <em>language</em></span>.</p>
 
       <p>You can do functional programming in many <span title="C#, Java, JavaScript, Python, Ruby, ...">modern languages</span>.  However, to learn functional programming, it is worthwhile to use a language which emphasises a functional-first approach; otherwise, it will be very easy to fall into bad old non-functional habits.  We will be using F#, a multi-paradigm language with a functional-first emphasis.</p>
 
       <p>In functional programming, we use <a href="#functions-part-1">functions</a> to create and transform <a href="#data">data</a>.</p>
+   </div>
+
+   <div id="functional-style" class="step txt">
+      <img style="height:4em;float:left" src="https://openclipart.org/people/jeeeyul/gangnam-style.svg" />
+      <h1>Functional style</h1>
+      <p>A functional style of programming is characterised by</p>
+      <ul>
+         <li><em>Immutability</em>: values, once created, can never be modified.  In other words, data is not <em>mutable</em>.</li>
+         <li><em>First-class functions</em>: you can call and define <a href="#functions-part-1">functions</a> as usual, and you can also do anything with a function that you would be able to do with a value.  For example,
+            <ul>
+               <li>You can give a value a name (we usually call this a <em>variable</em>), and you can give a function a name</li>
+               <li>You can pass a value around as a parameter, and you can pass a function around as a parameter</li>
+               <li>You can store a value in a list or other data structure, and you can store a function in a list or other data structure</li>
+               <li>You can give more than one name to a value (this is called <em>aliasing</em>), and you can give more than one name to a function</li>
+               <li>You can return a value from a function, and you can return a function from a function</li>
+               <li>Every value has a <a href="#types">type</a>, and every function has a type.</li>
+               <li>You can create literal values (i.e. values not associated with any variable name), and you can create literal functions (these are called <em>lambda functions</em>)</li>
+               <li>You can create a value at runtime based on user input, and you can create a function at runtime based on user input</li>
+            </ul>
+            <p>...and much, much more!  If in doubt, ask yourself whether you would be able to do a particular thing with a value.  If the answer is <q>yes</q>, then you are probably able to do the same thing with a function.</p>
+         </li>
+         <li><em>Purity</em>: a pure function has no side-effects and does not depend on anything except its input.
+            <ul>
+               <li>A <em>side-effect</em> is anything that a function does <em>above and beyond</em> returning a value.  For example, writing to a database, printing something to the screen, or altering an object's state are all side-effects.</li>
+               <li>An external dependency might involve reading the system clock, using a random number generator, or reading data from the network.</li>
+            </ul>
+         </li>
+      </ul>
+      <p>It seems obvious that first-class functions are better than the <q>conventional</q> methods and functions that you've seen so far in your Computer Science courses.  First-class functions can do everything that <q>ordinary</q> functions can do, and more &mdash; they're like <span title="Not to be taken as an endorsement of steroid use.  If you want medical advice, go and see a doctor, not a Computer Scientist.">functions on steroids</span>.  But what about <em>purity</em> and <em>immutability</em>?  <a href="#fp-benefits">Why are those useful?</a></p>
    </div>
 
     <div id="functions-part-1" class="step txt">
@@ -91,13 +132,64 @@
       <div style="min-height:5em;background:black;border-radius:7px;color:green;padding:1ex;font-family:'Nunito';position:relative"># (fun n -&gt; n+5) 8
       <div style="padding-left:5px;padding-right:5px;border-radius:7px;position:absolute;bottom:2px;right:2px;background:grey;color:black">run</div>
       </div>
-      <p>Click inside the console to activate it, then type in <code>(fun n -&gt; n+5) 8</code> and click on <q><span title="It's the button at the bottom-right of the console">run</span></q>.  See what the result is.</p>
-      <p>Then type in <code>fun n -&gt; n+5</code> and click on <q>run</q>.  You'll get an interesting result as your output.  <a href="#functions-part-3">Here's what that result means</a>.
+      <p>Click inside the console to activate it, then type in <code>(fun n -&gt; n+5) 8</code> and click on <q><span title="It's the button at the bottom-right of the console">run</span></q>.  See what the result is.  Notice that the <a href="#types">type</a> of the result (i.e. <code>int</code>) is displayed along with the answer.</p>
+      <p>Then type in <code>fun n -&gt; n+5</code> and click on <q>run</q>.  You'll get an interesting result as your output.  Remember: everything in F# is <a href="#types">typed</a>, and that includes functions.</p>
     </div>
+
+   <div id="data" class="step txt">
+      <h1>Types and data</h1>
+      <p>In F#, everything has a type.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <code>float</code>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type">unit</a> type that you need to know about.</p>
+      <p>A class in C# is a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
+      <ul>
+         <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
+         <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
+         <li>To represent a data which must be one of a limited set of known categories, you would use a <a href="#discriminated-unions">discriminated union</a>.  Example use-case: representing an atomic particle as <span title="It is impossible for an atomic particle to be anything except for one of these, and an atomic particle cannot be more than one of these."><em>one of</em> Electron, Neutron, or Proton</span>.
+      </ul>
+      <p>It is possible, easy, and idiomatic to mix data types.  For example, one may have a list of discriminated unions, each of which has a tuple or record associated with it.</p>
+   </div>
+
+   <div id="defined-created-decomposed" class="step txt">
+      <h1>Definition, Creation, and Decomposition</h1>
+      <p>It sounds complicated to say that every composite type has a way of being defined, created, and decomposed &hellip; but it's not complicated.  In fact, you already know how to do it, and you've been doing it for years in a non-functional language.  If you don't believe me, read on, and you'll see that it's true!</p>
+      <p>Let's use C# as our language, and a class as our composite type.  We'll start with an empty class.</p>
+      <pre><code>
+         class Wtf {
+         }
+      </code></pre>
+      <p>Now, you want to add an <code>int</code> property to this class &mdash; in other words, you want to <em>define</em> some of the data that makes up the composite type.  So, you write</p>
+      <pre><code>
+         class Wtf {
+            public int Ftw { get; set; }
+         }
+      </code></pre>
+      <p>When you want to <em>create</em> an instance of the class, you write</p>
+      <pre><code>
+         Wtf v = new Wtf();
+      </code></pre>
+      <p>And when you want to get the value of the <code>int</code> from inside the object &mdash; in other words, you want to <em>decompose</em> the object to get at the actual data inside it &mdash; you would write</p>
+      <pre><code>
+         int whatever = v.Ftw;
+      </code></pre>
+      <p>Take a look at the code above.  It's not unfamiliar or complex; by now, you should have created and used hundreds of classes in your own projects.  Can you see that you write completely different code to <em>define</em>, <em>create</em>, and <em>decompose</em> a composite type in C#?  In <span title="C, Python, Java, JavaScript, ...">other languages</span> that you've used, you'll notice exactly the same definition, creation, and decomposition of data types.</p>
+      <p>Definition, creation, and decomposition are all interrelated.  After all, you cannot create something that you haven't defined; you can't decompose what hasn't been defined or created; and there's no point in defining or creating unless you can decompose to get the data out.</p>
+      <p>The same applies to types in F#.  Each type has a way in which it is defined; a way in which it is created; and ways in which it is decomposed.  Once you learn how to define, create, and decompose a type, you will be able to use a type.</p>
+   </div>
 
 <script src="impresst.js/impresst.js"></script>
 <script>
-impress().init();</script>
+impress().init();
+(function(){
+   var linked = [].slice.call(document.querySelectorAll('a')).map(function(x){return x.attributes.href.value}).filter(function(x){return x[0]==='#'});
+   var linked_set = new Set(linked);
+   var created = [].slice.call(document.querySelectorAll("div.step.txt")).map(function(x){return '#' + x.id;});
+   var created_set = new Set(created);
+   // linked, but not created
+   linked.filter(function(x){return !created_set.has(x)}).forEach(function(x){console.log('Linked, but not created: ' + x);});
+   // created, but not linked
+   created.filter(function(x){return x!=='#primary'&&!linked_set.has(x)}).forEach(function(x){console.log('Created, but not linked: ' + x);});
+   
+})();
+</script>
 
 </body>
 </html>
