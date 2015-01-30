@@ -59,31 +59,134 @@
       <p>In functional programming, we use <a href="#functions-part-1">functions</a> to create and transform <a href="#data">data</a>.</p>
    </div>
 
+   <div id="first-class-functions" class="step txt">
+       <h1>First-class functions</h1>
+       <p>We've said that you can do anything with a first-class function that you would be able to do with a value.  But what does that mean, in practical terms?  Here are some similarities between functions and values:</p>
+       <ul>
+           <li>You can give a value a name (we usually call this a <em>variable</em>), and you can give a function a name</li>
+           <li>You can pass a value around as a parameter, and you can pass a function around as a parameter</li>
+           <li>You can store a value in a list or other data structure, and you can store a function in a list or other data structure</li>
+           <li>You can use a value as part of a <a href="#data">composite type</a>, and you can use a function as part of a composite type</li>
+           <li>You can give more than one name to a value (this is called <em>aliasing</em>), and you can give more than one name to a function</li>
+           <li>You can return a value from a function, and you can return a function from a function</li>
+           <li>Every value has a <a href="#data">type</a>, and every function has a <a href="#function-types">type</a></li>
+           <li>You can create literal values (i.e. values not associated with any variable name), and you can create literal functions (these are called <em>lambda functions</em>)</li>
+           <li>You can create a value at runtime based on user input, and you can create a function at runtime based on user input</li>           
+       </ul>
+       <p>...and much, much more!  If in doubt, ask yourself whether you would be able to do a particular thing with a value.  If the answer is <q>yes</q>, then you are probably able to do the same thing with a function.</p>
+   </div>
+
+   <div id="function-types" class="step txt">
+       <h1>Function types</h1>
+       <p>Let's recall the definition of a <a href="#functions-part-1">function</a>: a function is something that takes one input and produces one output.  We also know that all things in F# have a <a href="#data">type</a> associated with them.  This means that both the input and the output of a function will have a type.  We can therefore represent the type of a function in terms of its input and output!</p>
+       <p>For example, let's take a look at the function</p>
+       <pre><code>
+               fun p -&gt; p > 15.9
+       </code></pre>
+       <p>Using <a href="#type-inference">type inference</a>, we can see that the input is a <code>float</code> and the output is a <code>bool</code>.  So, we can say that the type of the function is <code>float&nbsp;-&gt;&nbsp;bool</code>.</p>
+   </div>
+
+   <div id="type-inference" class="step txt">
+       <h1>Type inference</h1>
+       <p>In a language like C# or Java, you usually specify the <em>type</em> of a variable.  For example, you might say</p>
+       <pre><code>
+               string j = "Dvorak";
+       </code></pre>
+       <p>Now, look at that code again.  We're initializing <code>j</code> to have the value <code>"Dvorak"</code>.  We know that <code>"Dvorak"</code> is a <code>string</code>, so why do we have to explicitly tell the compiler that <code>j</code> is a <code>string</code>?  Why can't the compiler be smart enough to figure this out by itself, using the context of the rest of the program?</p>
+       <p>That kind of <q>smartness</q> is called <em>type inference</em>.  Type inference is about <span title="<strong>infer</strong> (ɪnˈfəː) <em>verb</em>: to deduce or conclude (something) from evidence and reasoning rather than from explicit statements. [Google Dictionary]">inferring</span> the type of a symbol by looking at the evidence of the rest of the program and reasoning <q>backwards</q>.</p>
+       <p>In this course, I'll be satisfied by a layman's intuitive grasp of practical type inference, though if you're interested in the gory details, I can strongly recommend reading about the <a href="http://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system" target="_new">Hindley&mdash;Milner-style type inference</a>.</p>
+       <p>Type inference in F# usually works from top to bottom, left to right &mdash; though it occasionally goes a bit further than this.  When F# tries to figure out what the type of a symbol is, it first looks to see whether you've explicitly told it that a symbol has a particular type using a <a href="#type-annotations">type annotation</a>.  If you haven't explicitly told it anything about the symbol, then it looks at what the symbol interacts with; for example, if the symbol is used as the input of a function that takes a string, then the symbol must be a string &mdash; otherwise, it would be illegal to use the symbol when you're calling the function.  Lastly, if there aren't any constraints whatsoever on the type of the symbol, then the symbol is assumed to be <a href="#generic">generic</a>.  In fact, F# goes a step further than this, and can make symbols <em>as generic as possible</em>; we'll see an example of this later on.</p>
+       <p>Let's work through some simple examples:</p>
+       <ul>
+           <li><a href="#ti-literal">Simple type inference</a></li>
+           <li><a href="#ti-function">Slightly more complex type inference</a></li>
+           <li><a href="#ti-annotation">Type inference with annotations</a></li>
+       </ul>
+       <p>If a symbol is ever <a href="#ti-inconsistent">used inconsistently</a>, then your F# program will fail to compile.</p>
+       <p>Remember that the type inference works from <em>top to bottom</em>.  That means that you must define a symbol <em>above</em> the place where it is used.  Otherwise, the compiler will legitimately say that your symbol has not been defined.</p>
+       <p>F#'s type inference is reasonably advanced, though not foolproof.  If it fails, for whatever reason, then you should use your understanding of the type inference process to figure out why it has failed and take corrective action.  This is often as simple as correcting an error in your reasoning, reorganising your code, or adding in a type annotation.</p>
+   </div>
+
+   <div id="ti-inconsistent" class="step txt">
+       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <pre><code>
+               (fun m -&gt; m * 2) "kitty"
+       </code></pre>
+       <p>...type inference would go something like this:</p>
+       <ol>
+           <li>There's a function.  What is the <a href="#function-types">type of the function</a>?  I'll need to find input and output types.</li>
+           <li>There's a <code>m</code> symbol.  What could it be?</li>
+           <li>In the body of the function, <code>m</code> is multiplied by <code>2</code>.  This only makes sense if <code>m</code> is an <code>int</code>, so <code>m</code> must be an <code>int</code></li>
+           <li>I can see that there is a <code>string</code> (i.e. <code>"kitty"</code>) supplied as the input for the function</li>
+           <li>If <code>m</code> wasn't a <code>string</code>, then calling the function with this input would be illegal.  So, for this to be legal, <code>m</code> must be a <code>string</code></li>
+           <li>According to (3), <code>m</code> is an <code>int</code>.  But according to (5), <code>m</code> must be a <code>string</code>.  This is inconsistent.</li>
+       </ol>
+       <p>At this point, the type inference algorithm will fail, and you'll see the error message <samp>The type 'int' does not match the type 'string'</samp>.</p>
+   </div>
+
+   <div id="ti-literal" class="step txt">
+       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <pre><code>
+               fun k -&gt; k / 4.0
+       </code></pre>
+       <p>...type inference would go something like this:</p>
+       <ol>
+           <li>There's a function.  What is the <a href="#function-types">type of the function</a>?  I'll need to find input and output types.</li>
+           <li>There's a <code>k</code> symbol.  What could it be?</li>
+           <li><code>k</code> is divided by <code>4.0</code>.  I know that <code>4.0</code> is a <code>float</code></li>
+           <li>The only way that this code can make sense is if <code>k</code> was also a <code>float</code></li>
+           <li>Therefore, <code>k</code> is a <code>float</code></li>
+           <li>The input is a <code>float</code> and the output is a <code>float</code>.  So the function must have the type <code>float&nbsp;-&gt;&nbsp;float</code></li>
+       </ol>
+   </div>
+
+   <div id="ti-function" class="step txt">
+       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <pre><code>
+               (fun m -&gt; m+m) "kitty"
+       </code></pre>
+       <p>...type inference would go something like this:</p>
+       <ol>
+           <li>There's a function.  What is the <a href="#function-types">type of the function</a>?  I'll need to find input and output types.</li>
+           <li>There's a <code>m</code> symbol.  What could it be?</li>
+           <li>In the body of the function, <code>m</code> is added to itself.  Hm.  I know that I can use the <code>+</code> operator between <code>int</code>s or <code>float</code>s or <code>string</code>s or a few other types.  If I don't have any other evidence, I'll decide that <code>m</code> is an <code>int</code>.</li>
+           <li>I can see that there is a <code>string</code> (i.e. <code>"kitty"</code>) supplied as the input for the function</li>
+           <li>If <code>m</code> wasn't a <code>string</code>, then calling the function with this input would be illegal.  So, for this to be legal, <code>m</code> must be a <code>string</code></li>
+           <li>So inside the function, <code>m+m</code> must mean string concatenation, since I know that <code>m</code> is a <code>string</code></li>
+           <li>Therefore, the output of the function is a <code>string</code></li>
+           <li>The input is a <code>string</code> and the output is a <code>string</code>.  So the function must have the type <code>string&nbsp;-&gt;&nbsp;string</code></li>
+       </ol>
+   </div>
+
+   <div id="ti-annotation" class="step txt">
+       <p>(If you haven't read about <a href="#functions-part-1">functions</a> and <a href="#type-annotations">type annotations</a>, you should do that now!).  Given the code</p>
+       <pre><code>
+               fun (m:float) -&gt; m+m
+       </code></pre>
+       <p>...type inference would go something like this:</p>
+       <ol>
+           <li>There's a function.  What is the <a href="#function-types">type of the function</a>?  I'll need to find input and output types.</li>
+           <li>There's a <code>m</code> symbol.  The annotation says that it is a <code>float</code>.  Therefore, it is a <code>float</code>.</li>
+           <li>In the body of the function, <code>m</code> is added to itself.  This is legal when <code>m</code> is a <code>float</code>, and the result will be a <code>float</code></li>
+           <li>Therefore, the output of the function is a <code>float</code></li>
+           <li>The input is a <code>float</code> and the output is a <code>float</code>.  So the function must have the type <code>float&nbsp;-&gt;&nbsp;float</code></li>
+       </ol>
+   </div>
+
    <div id="functional-style" class="step txt">
       <img style="height:4em;float:left" src="https://openclipart.org/people/jeeeyul/gangnam-style.svg" />
       <h1>Functional style</h1>
       <p>A functional style of programming is characterised by</p>
       <ul>
          <li><em>Immutability</em>: values, once created, can never be modified.  In other words, data is not <em>mutable</em>.</li>
-         <li><em>First-class functions</em>: you can call and define <a href="#functions-part-1">functions</a> as usual, and you can also do anything with a function that you would be able to do with a value.  For example,
-            <ul>
-               <li>You can give a value a name (we usually call this a <em>variable</em>), and you can give a function a name</li>
-               <li>You can pass a value around as a parameter, and you can pass a function around as a parameter</li>
-               <li>You can store a value in a list or other data structure, and you can store a function in a list or other data structure</li>
-               <li>You can give more than one name to a value (this is called <em>aliasing</em>), and you can give more than one name to a function</li>
-               <li>You can return a value from a function, and you can return a function from a function</li>
-               <li>Every value has a <a href="#types">type</a>, and every function has a type.</li>
-               <li>You can create literal values (i.e. values not associated with any variable name), and you can create literal functions (these are called <em>lambda functions</em>)</li>
-               <li>You can create a value at runtime based on user input, and you can create a function at runtime based on user input</li>
-            </ul>
-            <p>...and much, much more!  If in doubt, ask yourself whether you would be able to do a particular thing with a value.  If the answer is <q>yes</q>, then you are probably able to do the same thing with a function.</p>
-         </li>
+         <li><em>First-class functions</em>: you can call and define <a href="#functions-part-1">functions</a> as usual, and you can also <a href="#first-class-functions">do anything with a function that you would be able to do with a value</a>.</li>
          <li><em>Purity</em>: a pure function has no side-effects and does not depend on anything except its input.
             <ul>
                <li>A <em>side-effect</em> is anything that a function does <em>above and beyond</em> returning a value.  For example, writing to a database, printing something to the screen, or altering an object's state are all side-effects.</li>
                <li>An external dependency might involve reading the system clock, using a random number generator, or reading data from the network.</li>
             </ul>
          </li>
+         <li><em>Expressions</em>: the vast majority of code in a functional program is written as expressions, not statements.  The difference between an expression and a statement is that an expression generates a value, and a statement does not.  For example, in C#, <code>2+7</code> is an expression and <code>while (false) { }</code> is a statement.  We can <span title="<code>int x = 2+7;</code> is legal">assign the former to a variable</span> because it generates a value, but we <span title="<code>void x = while (false) { }</code> is illegal">cannot do this for the latter</span> because there is no value generated that could be assigned to a variable.</li>
       </ul>
       <p>It seems obvious that first-class functions are better than the <q>conventional</q> methods and functions that you've seen so far in your Computer Science courses.  First-class functions can do everything that <q>ordinary</q> functions can do, and more &mdash; they're like <span title="Not to be taken as an endorsement of steroid use.  If you want medical advice, go and see a doctor, not a Computer Scientist.">functions on steroids</span>.  But what about <em>purity</em> and <em>immutability</em>?  <a href="#fp-benefits">Why are those useful?</a></p>
    </div>
@@ -102,14 +205,15 @@
          n -&gt; n + 5
       </code></pre>
       <p>On the left side of the <code>-&gt;</code>, we have the <em>input</em>.  On the right side, we have the <em>output</em>.</p>
-      <p>Now, a function is nice, but it does me no good to just have a function sitting around and doing nothing.  I'd like to <em>apply</em> it (in Computer Science, we'd say that I want to <em>call</em> the function), and to do that I must give it an input.  To give this function an input, I'll enclose the function in parentheses, and give it the input just after the parentheses, separated by a space:
+      <p>Now, a function is nice, but it does me no good to just have a function sitting around and doing nothing.  I'd like to <em>apply</em> it (in Computer Science, we'd say that I want to <em>call</em> the function), and to do that I must give it an input.  To give this function an input, I'll enclose the function in parentheses, and give it the input just after the parentheses, separated by a space.  That will make it easy for me to see where the function ends and where the input begins.</p>
       <pre><code>
          (n -&gt; n + 5) 8
       </code></pre>
-      <p>Remember: when a function is given an input, it provides its output.  So the above expression is semantically equivalent to this:
+      <p>Remember: when a function is given an input, it provides its output.  So the above expression is semantically equivalent to this:</p>
       <pre><code>
          13
       </code></pre>
+      <p>Note that, because a function always produces an output, all functions are <a href="#functional-style">expressions</a>.</p>
       <p>Make sure that you see how this works &mdash; and, especially, make sure that you understand the definition of a <em>function</em>.  Also pay attention to the notation I've been using for an abstract function.  You'll see me using the same notation later on.</p>
       <p>When you're ready to move on, let's take a look at what <a href="#functions-part-2">a real function looks like in F#</a>.</p>
     </div>
@@ -120,7 +224,7 @@
       <pre><code>
          fun n -&gt; n + 5
       </code></pre>
-      <p>(Almost the same as the abstract notation, isn't it?)  And here's how you would <em>apply</em> (<span title="I'll use both terms interchangeably">or <em>call</em></span>) a function:</p>
+      <p>And here's how you would <em>apply</em> (<span title="I'll use both terms interchangeably">or <em>call</em></span>) a function:</p>
       <pre><code>
          (fun n -&gt; n + 5) 8
       </code></pre>
@@ -128,24 +232,35 @@
       <pre><code>
          13
       </code></pre>
-      <p>But don't take my word for it.  Try it out.  Here's a F# console:</p>
-      <div style="min-height:5em;background:black;border-radius:7px;color:green;padding:1ex;font-family:'Nunito';position:relative"># (fun n -&gt; n+5) 8
-      <div style="padding-left:5px;padding-right:5px;border-radius:7px;position:absolute;bottom:2px;right:2px;background:grey;color:black">run</div>
-      </div>
-      <p>Click inside the console to activate it, then type in <code>(fun n -&gt; n+5) 8</code> and click on <q><span title="It's the button at the bottom-right of the console">run</span></q>.  See what the result is.  Notice that the <a href="#types">type</a> of the result (i.e. <code>int</code>) is displayed along with the answer.</p>
-      <p>Then type in <code>fun n -&gt; n+5</code> and click on <q>run</q>.  You'll get an interesting result as your output.  Remember: everything in F# is <a href="#types">typed</a>, and that includes functions.</p>
+      <p>You'll note that this syntax is almost exactly the same as the abstract notation that <a href="#functions-part-1">you saw before</a>.  There's no need for an explicit <q>return</q> statement: the output of a function is the last value that the function generates.</p>
+      <hr />
+      <p>Be sure that you understand what's going on before we proceed!  Here's a recap of the important points:</p>
+      <ul>
+         <li>A function always takes <em>exactly one</em> input and produces <em>exactly one</em> output</li>
+         <li>The input is on the left of the <code>-&gt;</code> and the output is on the right of the <code>-&gt;</code>
+         <li>A function is an <a href="#functional-style">expression</a></li>
+         <li>The input to a function is separated from the function by a space</li>
+         <li>When you give a function its input (i.e., when you <em>call</em> the function), the result is its output</li>
+      </ul>
+      
     </div>
 
    <div id="data" class="step txt">
       <h1>Types and data</h1>
-      <p>In F#, everything has a type.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <code>float</code>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type">unit</a> type that you need to know about.</p>
-      <p>A class in C# is a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
+      <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>
+      <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
       <ul>
          <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
          <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
          <li>To represent a data which must be one of a limited set of known categories, you would use a <a href="#discriminated-unions">discriminated union</a>.  Example use-case: representing an atomic particle as <span title="It is impossible for an atomic particle to be anything except for one of these, and an atomic particle cannot be more than one of these."><em>one of</em> Electron, Neutron, or Proton</span>.
       </ul>
-      <p>It is possible, easy, and idiomatic to mix data types.  For example, one may have a list of discriminated unions, each of which has a tuple or record associated with it.</p>
+      <p>Of course, you can use composite types to create other composite types!  For example, you can make a list of discriminated unions, where each discriminated union has a tuple or record associated with it, and each record has a field that is a discriminated union, which might be associated with a list &hellip; and so on.</p>
+   </div>
+
+   <div id="unit-type" class="step txt">
+       <h1>The <code>unit</code> type</h1>
+       <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
+       <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
    </div>
 
    <div id="defined-created-decomposed" class="step txt">
