@@ -66,10 +66,10 @@
            <li>You can give a value a name (we usually call this a <em>variable</em>), and you can give a function a name</li>
            <li>You can pass a value around as a parameter, and you can pass a function around as a parameter</li>
            <li>You can store a value in a list or other data structure, and you can store a function in a list or other data structure</li>
-           <li>You can use a value as part of a <a href="#data">composite type</a>, and you can use a function as part of a composite type</li>
+           <li>You can use a value as part of a <a href="#types">composite type</a>, and you can use a function as part of a composite type</li>
            <li>You can give more than one name to a value (this is called <em>aliasing</em>), and you can give more than one name to a function</li>
            <li>You can return a value from a function, and you can return a function from a function</li>
-           <li>Every value has a <a href="#data">type</a>, and every function has a <a href="#function-types">type</a></li>
+           <li>Every value has a <a href="#types">type</a>, and every function has a <a href="#function-types">type</a></li>
            <li>You can create literal values (i.e. values not associated with any variable name), and you can create literal functions (these are called <em>lambda functions</em>)</li>
            <li>You can create a value at runtime based on user input, and you can create a function at runtime based on user input</li>           
        </ul>
@@ -78,12 +78,49 @@
 
    <div id="function-types" class="step txt">
        <h1>Function types</h1>
-       <p>Let's recall the definition of a <a href="#functions-part-1">function</a>: a function is something that takes one input and produces one output.  We also know that all things in F# have a <a href="#data">type</a> associated with them.  This means that both the input and the output of a function will have a type.  We can therefore represent the type of a function in terms of its input and output!</p>
+       <p>Let's recall the definition of a <a href="#functions-part-1">function</a>: a function is something that takes one input and produces one output.  We also know that all things in F# have a <a href="#types">type</a> associated with them.  This means that both the input and the output of a function will have a type.  We can therefore represent the type of a function in terms of its input and output!</p>
        <p>For example, let's take a look at the function</p>
        <pre><code>
                fun p -&gt; p > 15.9
        </code></pre>
        <p>Using <a href="#type-inference">type inference</a>, we can see that the input is a <code>float</code> and the output is a <code>bool</code>.  So, we can say that the type of the function is <code>float&nbsp;-&gt;&nbsp;bool</code>.</p>
+   </div>
+
+   <div id="type-annotations" class="step txt">
+       <h1>Type annotations</h1>
+       <p>A type annotation is used to explicitly tell the compiler what the type of a symbol is.  It is only used when the <a href="#type-inference">type inference</a> algorithm fails or returns the incorrect result.</p>
+       <p>Type annotations do not <em>coerce</em> a type; in other words, they do not <em>cast</em> or <em>convert</em> a type into another type.  So, for example, you cannot use type annotations to turn an <code>int</code> into a <code>float</code>, or vice versa.  The only thing that type annotations do is specify what a type is, thus providing information for the type inference system to work with.</p>
+       <p>To annotate a symbol, put <span title="(&nbsp;)">round brackets</span> around it, put a colon after it, and then write down the symbol's type.  So, to annotate the symbol <code>zippy</code> in</p>
+       <pre><code>
+	            fun zippy -> zippy + " is happy"
+       </code></pre>
+       <p>...you would write:</p>
+       <pre><code>
+	            fun (zippy:string) -> zippy + " is happy"
+       </code></pre>
+       <p>Note that the annotation occurs where the variable is defined, and not where it is used.</p>
+   </div>
+
+   <div id="lists-todo" class="step txt">
+       <h1>Lists</h1>
+       <p>The built-in list type in F# is a singly-linked list with special syntax to make creation and use easy.</p>
+       
+   </div>
+
+   <div id="generic" class="step txt">
+       <h1>Generic types</h1>
+       <p>A symbol which has a <em>generic</em> type is one which can legitimately be any type.  For example, let's consider a very simple function:</p>
+       <pre><code>
+	            <span title="This is called the <em>identity</em> function, FYI">fun x -> x</span>
+       </code></pre>
+       <p>It takes an input, and gives you the same input back.  The type of the input doesn't matter: this function can work with any type.  If you give it a <code>string</code> as input, then the output type is <code>string</code>.  If you give it an <code>int</code> as input, then the output type is <code>int</code>.</p>
+       <p>The word <q>generic</q> means <q>works with any type</q>.  It's very important to understand what <q>generic</q> <em>doesn't</em> mean, too.</p>
+       <ul>
+	        <li><q>generic</q> doesn't mean <q>has no type</q>.  The symbol <code>x</code> <em>does</em> have a type, and the type that it has is determined at runtime, based on the context of the call.</li>
+	        <li><q>generic</q> doesn't mean <q>dynamic type</q>.  The type of <code>x</code> is not changeable once it is known!  If I pass in an <code>int</code>, I'm going to get an <code>int</code> back &mdash; not a <code>float</code>, or a <code>string</code>, or something else.  There's no <q>back door</q> that circumvents the static type system here.</li>
+       </ul>
+       <p>Conventionally, we indicate a generic type by using an apostrophe and a lowercase letter.  So instead of saying that <code>x</code> has type <code>string</code> or <code>float</code> &mdash; although those are types that it might take on at runtime &mdash; we say that <code>x</code> has type <code>'a</code>.  If there was a second generic type, we'd say that it had type <code>'b</code>, and so on.</p>
+       <p>When two or more generic types are guaranteed to be the same, then we use the same lowercase letter for all of them.  For example, the function above is guaranteed to return the same type that it takes in, so its <a href="#function-types">function type</a> is <code>'a&nbsp;-&gt;&nbsp;'a</code></p>
    </div>
 
    <div id="type-inference" class="step txt">
@@ -245,67 +282,95 @@
       
     </div>
 
-   <div id="data" class="step txt">
-      <h1>Types and data</h1>
-      <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>
-      <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
-      <ul>
-         <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
-         <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
-         <li>To represent a data which must be one of a limited set of known categories, you would use a <a href="#discriminated-unions">discriminated union</a>.  Example use-case: representing an atomic particle as <span title="It is impossible for an atomic particle to be anything except for one of these, and an atomic particle cannot be more than one of these."><em>one of</em> Electron, Neutron, or Proton</span>.
-      </ul>
-      <p>Of course, you can use composite types to create other composite types!  For example, you can make a list of discriminated unions, where each discriminated union has a tuple or record associated with it, and each record has a field that is a discriminated union, which might be associated with a list &hellip; and so on.</p>
-   </div>
+    <div id="data" class="step txt">
+        <h1>Data</h1>
+        <p>Data in F# comes in many <a href="#types">types</a>.  Both data and <a href="#functions-part-1">functions</a> can be <a href="#binding">bound</a> to <em>symbols</em> (or <span title="I will use the two terms interchangeably"><em>variables</em></span>), which makes them more convenient to use.</p>
+    </div>
 
-   <div id="unit-type" class="step txt">
-       <h1>The <code>unit</code> type</h1>
-       <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
-       <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
-   </div>
+    <div id="binding" class="step txt">
+        <h1>Binding</h1>
+        <p>Binding is the process of associating zero or more symbols with some data.  The simplest kind of binding as a <em>let-binding</em> such as</p>
+        <pre><code>
+                let abc = 95
+        </code></pre>
+        <p>Though it resembles assignment, there are two very important differences between binding and assignment:</p>
+        <ol>
+            <li>Bindings use <em>patterns</em></li>
+            <li>Bindings can <em>fail</em></li>
+        </ol>
+        <p>In the above code, the symbol <code>abc</code> is a simple pattern that <span title="This happens at compile-time, not runtime">F# attempts to <em>match</em> with the provided value</span>.  Essentially, F# asks the question: what possible type and value should <code>abc</code> have in order to make the two sides equivalent?  In this case, the only possible type is <code>int</code>, and the only possible value is <code>95</code>.  Therefore, the symbol <code>abc</code> is given the value <code>95</code>.</p>
+        <p>Unlike assignment, this way of interpreting things means that the following code is perfectly legal and compilable:</p>
+        <pre><code>
+                let 31337 = 31337
+        </code></pre>
+        <p>Here we match the value <code>31337</code> against the constant pattern <code>31337</code>.  The two sides match, and the program proceeds.  But if we were to write</p>
+        <pre><code>
+                let "batman" = "joker"
+        </code></pre>
+        <p>...then the value <code>"joker"</code> would be matched against the constant pattern <code>"batman"</code>.  The program <span title="Though you would get a warning: the F# compiler is smart enough to catch simple mistakes.">would compile</span> &mdash; the code is perfectly legal!  However, at runtime, executing this would result in a <samp>MatchFailureException</samp>, which is what F# uses to indicate that a matching binding couldn't be found.</p>
+        <p>If you're thinking that this is a really stupid way to do things, then you're right &mdash; for now!  It does seem to be a complicated, unnecessary way to do something as simple as assignment.  However, the two differences between assignment and binding will become extremely useful and important later on, when we discuss <a href="#types">composite types</a>.  Binding will give us a way to write complex code in a shorter, more elegant way than ever before.  For now, you can think of binding as if it were assignment; for simple cases, there isn't much difference between the two.  But keep the differences in mind, because you will need to remember them when we talk about <a href="#types">types</a>.</p>
+    </div>
 
-   <div id="defined-created-decomposed" class="step txt">
-      <h1>Definition, Creation, and Decomposition</h1>
-      <p>It sounds complicated to say that every composite type has a way of being defined, created, and decomposed &hellip; but it's not complicated.  In fact, you already know how to do it, and you've been doing it for years in a non-functional language.  If you don't believe me, read on, and you'll see that it's true!</p>
-      <p>Let's use C# as our language, and a class as our composite type.  We'll start with an empty class.</p>
-      <pre><code>
-         class Wtf {
-         }
-      </code></pre>
-      <p>Now, you want to add an <code>int</code> property to this class &mdash; in other words, you want to <em>define</em> some of the data that makes up the composite type.  So, you write</p>
-      <pre><code>
-         class Wtf {
-            public int Ftw { get; set; }
-         }
-      </code></pre>
-      <p>When you want to <em>create</em> an instance of the class, you write</p>
-      <pre><code>
-         Wtf v = new Wtf();
-      </code></pre>
-      <p>And when you want to get the value of the <code>int</code> from inside the object &mdash; in other words, you want to <em>decompose</em> the object to get at the actual data inside it &mdash; you would write</p>
-      <pre><code>
-         int whatever = v.Ftw;
-      </code></pre>
-      <p>Take a look at the code above.  It's not unfamiliar or complex; by now, you should have created and used hundreds of classes in your own projects.  Can you see that you write completely different code to <em>define</em>, <em>create</em>, and <em>decompose</em> a composite type in C#?  In <span title="C, Python, Java, JavaScript, ...">other languages</span> that you've used, you'll notice exactly the same definition, creation, and decomposition of data types.</p>
-      <p>Definition, creation, and decomposition are all interrelated.  After all, you cannot create something that you haven't defined; you can't decompose what hasn't been defined or created; and there's no point in defining or creating unless you can decompose to get the data out.</p>
-      <p>The same applies to types in F#.  Each type has a way in which it is defined; a way in which it is created; and ways in which it is decomposed.  Once you learn how to define, create, and decompose a type, you will be able to use a type.</p>
-   </div>
-
-<script src="impresst.js/impresst.js"></script>
-<script>
-impress().init();
-(function(){
-   var linked = [].slice.call(document.querySelectorAll('a')).map(function(x){return x.attributes.href.value}).filter(function(x){return x[0]==='#'});
-   var linked_set = new Set(linked);
-   var created = [].slice.call(document.querySelectorAll("div.step.txt")).map(function(x){return '#' + x.id;});
-   var created_set = new Set(created);
-   // linked, but not created
-   linked.filter(function(x){return !created_set.has(x)}).forEach(function(x){console.log('Linked, but not created: ' + x);});
-   // created, but not linked
-   created.filter(function(x){return x!=='#primary'&&!linked_set.has(x)}).forEach(function(x){console.log('Created, but not linked: ' + x);});
-   
-})();
-</script>
-
+    <div id="types" class="step txt">
+        <h1>Types</h1>
+        <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>
+        <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
+        <ul>
+            <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
+            <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
+            <li>To represent a data which must be one of a limited set of known categories, you would use a <a href="#discriminated-unions">discriminated union</a>.  Example use-case: representing an atomic particle as <span title="It is impossible for an atomic particle to be anything except for one of these, and an atomic particle cannot be more than one of these."><em>one of</em> Electron, Neutron, or Proton</span>.
+        </ul>
+        <p>Of course, you can use composite types to create other composite types!  For example, you can make a list of discriminated unions, where each discriminated union has a tuple or record associated with it, and each record has a field that is a discriminated union, which might be associated with a list &hellip; and so on.</p>
+    </div>
+    
+    <div id="unit-type" class="step txt">
+        <h1>The <code>unit</code> type</h1>
+        <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
+        <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
+    </div>
+    
+    <div id="defined-created-decomposed" class="step txt">
+        <h1>Definition, Creation, and Decomposition</h1>
+        <p>It sounds complicated to say that every composite type has a way of being defined, created, and decomposed &hellip; but it's not complicated.  In fact, you already know how to do it, and you've been doing it for years in a non-functional language.  If you don't believe me, read on, and you'll see that it's true!</p>
+        <p>Let's use C# as our language, and a class as our composite type.  We'll start with an empty class.</p>
+        <pre><code>
+                class Wtf {
+                }
+        </code></pre>
+        <p>Now, you want to add an <code>int</code> property to this class &mdash; in other words, you want to <em>define</em> some of the data that makes up the composite type.  So, you write</p>
+        <pre><code>
+                class Wtf {
+                    public int Ftw { get; set; }
+                }
+        </code></pre>
+        <p>When you want to <em>create</em> an instance of the class, you write</p>
+        <pre><code>
+                Wtf v = new Wtf();
+        </code></pre>
+        <p>And when you want to get the value of the <code>int</code> from inside the object &mdash; in other words, you want to <em>decompose</em> the object to get at the actual data inside it &mdash; you would write</p>
+        <pre><code>
+                int whatever = v.Ftw;
+        </code></pre>
+        <p>Take a look at the code above.  It's not unfamiliar or complex; by now, you should have created and used hundreds of classes in your own projects.  Can you see that you write completely different code to <em>define</em>, <em>create</em>, and <em>decompose</em> a composite type in C#?  In <span title="C, Python, Java, JavaScript, ...">other languages</span> that you've used, you'll notice exactly the same definition, creation, and decomposition of data types.</p>
+        <p>Definition, creation, and decomposition are all interrelated.  After all, you cannot create something that you haven't defined; you can't decompose what hasn't been defined or created; and there's no point in defining or creating unless you can decompose to get the data out.</p>
+        <p>The same applies to types in F#.  Each type has a way in which it is defined; a way in which it is created; and ways in which it is decomposed.  Once you learn how to define, create, and decompose a type, you will be able to use a type.</p>
+    </div>
+    
+    <script src="impresst.js/impresst.js"></script>
+    <script>
+    impress().init();
+    (function(){
+        var linked = [].slice.call(document.querySelectorAll('a')).map(function(x){return x.attributes.href.value}).filter(function(x){return x[0]==='#'});
+        var linked_set = new Set(linked);
+        var created = [].slice.call(document.querySelectorAll("div.step.txt")).map(function(x){return '#' + x.id;});
+        var created_set = new Set(created);
+        // linked, but not created
+        linked.filter(function(x){return !created_set.has(x)}).forEach(function(x){console.log('Linked, but not created: ' + x);});
+        // created, but not linked
+        created.filter(function(x){return x!=='#primary'&&!linked_set.has(x)}).forEach(function(x){console.log('Created, but not linked: ' + x);});        
+    })();
+    </script>
+    
 </body>
 </html>
 
