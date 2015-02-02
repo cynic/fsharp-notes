@@ -56,20 +56,83 @@
 
       <p>You can do functional programming in many <span title="C#, Java, JavaScript, Python, Ruby, ...">modern languages</span>.  However, to learn functional programming, it is worthwhile to use a language which emphasises a functional-first approach; otherwise, it will be very easy to fall into bad old non-functional habits.  We will be using F#, a multi-paradigm language with a functional-first emphasis.</p>
 
-      <p>In functional programming, we use <a href="#functions-part-1">functions</a> to create and transform <a href="#data">data</a>.</p>
+      <p>We'll start our exploration of F# by looking at things that <a href="#tut-same">you might be familiar with</a>.</p>
+   </div>
+
+   <div id="tut-same" class="step txt">
+       <h1>Things that are the same</h1>
+       <ul>
+           <li>Just as in C# or Java or other statically-typed languages, everything has a <em>type</em>.  Most of the basic types in F# are familiar to you already: <code>int</code>, <code>string</code>, <span title="You might know this as <code>double</code>"><code>float</code></span>, <code>char</code>, and <code>bool</code>.</li>
+           <li>Just as in other languages, there are relational operators.  I've highlighted the syntax that is different in F#.
+               <table>
+                   <thead>
+                       <tr>
+                           <th>C#/Java syntax</th>
+                           <th>F# syntax</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       <tr>
+                           <td>a &gt; b</td>
+                           <td>a &gt; b</td>
+                       </tr>
+                       <tr>
+                           <td>a &lt; b</td>
+                           <td>a &lt; b</td>
+                       </tr>
+                       <tr>
+                           <td>a &gt;= b</td>
+                           <td>a &gt;= b</td>
+                       </tr>
+                       <tr>
+                           <td>a &lt;= b</td>
+                           <td>a &lt;= b</td>
+                       </tr>
+                       <tr class="highlight">
+                           <td>a == b</td>
+                           <td>a = b</td>
+                       </tr>
+                       <tr class="highlight">
+                           <td>a != b</td>
+                           <td>a &lt;&gt; b</td>
+                       </tr>
+                   </tbody>
+               </table>
+           </li>
+           <li>The usual C-style mathematical operators (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>) are all present, and have the meanings you would expect.</li>
+           <li>The scoping rules for variables are mostly the same as the ones you're used to.</li>
+       </ul>
+       <p>There are also things, mostly stemming from the <a href="#functional-style">functional style of programming</a>, which are <a href="#tut-different">different</a>.</p>
+   </div>
+
+   <div id="tut-different" class="step txt">
+       <h1>Differences</h1>
+       <p>I've broken this down into minor differences and major differences.  The minor ones are easy to get used to; the major ones might require a bit of mental adjustment.</p>
+       <h2>Minor differences</h2>
+       <ul>
+           <li>Indentation is significant.  Unlike in C# and Java, where <code>{</code> and <code>}</code> are used to show blocks and scoping, in F# (and <span title="Python, Ruby, CoffeeScript, Haskell, ...">other languages</span>) the level of indentation shows where a block begins and ends.</li>
+           <li>All variables are <em>immutable</em>: the value of a variable <span title="Yes, I really do mean <q>never</q>!">can <strong>never</strong> be changed</span>.  In fact, all values are immutable: once created, they can never be changed.  I will often use the words <q>symbol</q> or <q>value</q> instead of <q>variable</q> to emphasise this difference.</li>
+       </ul>
+       <h2>Major differences</h2>
+       <ul>
+           <li>Instead of assignment, we use <em>binding</em>.  In fact, binding is used in place of <code>if</code>-statements, and we use binding when we use any sort of data structure in F#.</li>
+           <li>Functions are <a href="#first-class-functions">first-class</a>.</li>
+           <li>Instead of <span title="<code>while</code>, <code>for</code>, <code>foreach</code>, ...">explicit loops</span>, we use <span title="Recursion is the process of a function calling itself so that its code can be repeatedly executed.">recursion</span>.</li>
+       </ul>
+       <p>We'll discuss binding by looking at the most common type of binding: <a href="#binding">let-binding</a>.
    </div>
 
    <div id="first-class-functions" class="step txt">
        <h1>First-class functions</h1>
-       <p>We've said that you can do anything with a first-class function that you would be able to do with a value.  But what does that mean, in practical terms?  Here are some similarities between functions and values:</p>
+       <p><q>First-class</q> means that you can do anything with a function that you would be able to do with a value.  But what does that mean, in practical terms?  Here are some similarities between functions and values:</p>
        <ul>
            <li>You can give a value a name (we usually call this a <em>variable</em>), and you can give a function a name</li>
            <li>You can pass a value around as a parameter, and you can pass a function around as a parameter</li>
            <li>You can store a value in a list or other data structure, and you can store a function in a list or other data structure</li>
-           <li>You can use a value as part of a <a href="#types">composite type</a>, and you can use a function as part of a composite type</li>
+           <li>You can use a value as part of a <span title="A type made up of other types. For example, a <em>class</em> in C# is a composite type.">composite type</span>, and you can use a function as part of a composite type</li>
            <li>You can give more than one name to a value (this is called <em>aliasing</em>), and you can give more than one name to a function</li>
            <li>You can return a value from a function, and you can return a function from a function</li>
-           <li>Every value has a <a href="#types">type</a>, and every function has a <a href="#function-types">type</a></li>
+           <li>Every value has a type, and every function has a type</li>
            <li>You can create literal values (i.e. values not associated with any variable name), and you can create literal functions (these are called <em>lambda functions</em>)</li>
            <li>You can create a value at runtime based on user input, and you can create a function at runtime based on user input</li>           
        </ul>
@@ -216,7 +279,7 @@
       <p>A functional style of programming is characterised by</p>
       <ul>
          <li><em>Immutability</em>: values, once created, can never be modified.  In other words, data is not <em>mutable</em>.</li>
-         <li><em>First-class functions</em>: you can call and define <a href="#functions-part-1">functions</a> as usual, and you can also <a href="#first-class-functions">do anything with a function that you would be able to do with a value</a>.</li>
+         <li><em>First-class functions</em>: you can call and define functions as usual, and you can also <a href="#first-class-functions">do anything with a function that you would be able to do with a value</a>.</li>
          <li><em>Purity</em>: a pure function has no side-effects and does not depend on anything except its input.
             <ul>
                <li>A <em>side-effect</em> is anything that a function does <em>above and beyond</em> returning a value.  For example, writing to a database, printing something to the screen, or altering an object's state are all side-effects.</li>
@@ -289,7 +352,7 @@
 
     <div id="binding" class="step txt">
         <h1>Binding</h1>
-        <p>Binding is the process of associating zero or more symbols with some data.  The simplest kind of binding as a <em>let-binding</em> such as</p>
+        <p>Binding is the process of associating zero or more symbols with some data.  The simplest kind of binding is a <code>let</code>-binding such as</p>
         <pre><code>
                 let abc = 95
         </code></pre>
@@ -298,6 +361,10 @@
             <li>Bindings use <em>patterns</em></li>
             <li>Bindings can <em>fail</em></li>
         </ol>
+        <p>The form of a <code>let</code> binding is:</p>
+        <pre><code>
+                let <u>pattern</u> = <u>value</u>
+        </code></pre>
         <p>In the above code, the symbol <code>abc</code> is a simple pattern that <span title="This happens at compile-time, not runtime">F# attempts to <em>match</em> with the provided value</span>.  Essentially, F# asks the question: what possible type and value should <code>abc</code> have in order to make the two sides equivalent?  In this case, the only possible type is <code>int</code>, and the only possible value is <code>95</code>.  Therefore, the symbol <code>abc</code> is given the value <code>95</code>.</p>
         <p>Unlike assignment, this way of interpreting things means that the following code is perfectly legal and compilable:</p>
         <pre><code>
@@ -308,7 +375,10 @@
                 let "batman" = "joker"
         </code></pre>
         <p>...then the value <code>"joker"</code> would be matched against the constant pattern <code>"batman"</code>.  The program <span title="Though you would get a warning: the F# compiler is smart enough to catch simple mistakes.">would compile</span> &mdash; the code is perfectly legal!  However, at runtime, executing this would result in a <samp>MatchFailureException</samp>, which is what F# uses to indicate that a matching binding couldn't be found.</p>
-        <p>If you're thinking that this is a really stupid way to do things, then you're right &mdash; for now!  It does seem to be a complicated, unnecessary way to do something as simple as assignment.  However, the two differences between assignment and binding will become extremely useful and important later on, when we discuss <a href="#types">composite types</a>.  Binding will give us a way to write complex code in a shorter, more elegant way than ever before.  For now, you can think of binding as if it were assignment; for simple cases, there isn't much difference between the two.  But keep the differences in mind, because you will need to remember them when we talk about <a href="#types">types</a>.</p>
+        <p>All of this seems to be a complicated, unnecessary way to do something as simple as assignment.   But binding is used for much more than assignment &mdash; you will see binding at work in many different parts of the language.  Let's look at the <a href="#match-expressions"><code>match</code> expression</a>, which relies upon both patterns and failure.</p>
+    </div>
+
+    <div id="match-expressions" class="step txt">
     </div>
 
     <div id="types" class="step txt">
