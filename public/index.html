@@ -119,7 +119,7 @@
            <li>Functions are <a href="#first-class-functions">first-class</a>.</li>
            <li>Instead of <span title="<code>while</code>, <code>for</code>, <code>foreach</code>, ...">explicit loops</span>, we use <span title="Recursion is the process of a function calling itself so that its code can be repeatedly executed.">recursion</span>.</li>
        </ul>
-       <p>We'll discuss binding by looking at the most common type of binding: <a href="#binding">let-binding</a>.
+       <p>We'll discuss binding by looking at the most common type of binding: <a href="#binding"><code>let</code>-binding</a>.
    </div>
 
    <div id="first-class-functions" class="step txt">
@@ -350,6 +350,30 @@
         <p>Data in F# comes in many <a href="#types">types</a>.  Both data and <a href="#functions-part-1">functions</a> can be <a href="#binding">bound</a> to <em>symbols</em> (or <span title="I will use the two terms interchangeably"><em>variables</em></span>), which makes them more convenient to use.</p>
     </div>
 
+    <div id="variable-pattern" class="step txt">
+        <h1>Variable patterns</h1>
+        <p>A <em>variable</em> pattern is a variable name.  Valid variable names in F# are almost the same as valid variable names in most other <q>mainstream</q> languages such as C, C#, Java, Python, etc, with one difference: they should not start with a capital letter.  In addition, F# allows variable names to be any sequence of characters, including spaces, as long as the variable name is delimited with <span title="These are backticks.  Usually at the top-left of a keyboard, above the Tab key."><code>``</code></span> marks.  The following are all valid variable patterns:</p>
+        <ul>
+            <li><code>x</code></li>
+            <li><code>abc</code></li>
+            <li><code>number221B_bakerStreet</code></li>
+            <li><code>``A Rose by any other name would not star in the movie "Titanic"``</code></li>
+        </ul>
+        <p>A variable pattern matches any data, and can later be used to refer to the data that was matched.</p>
+    </div>
+
+    <div id="constant-pattern" class="step txt">
+        <h1>Constant patterns</h1>
+        <p>A <em>constant</em> pattern is a literal data value.  For example, <code>5</code> is a constant pattern.  Other examples of constant patterns:</p>
+        <ul>
+            <li><code>"Fullmetal Alchemist"</code></li>
+            <li><code>37.1</code></li>
+            <li><code>'z'</code></li>
+            <li><code>2602</code></li>
+        </ul>
+        <p>A constant pattern only matches data that is exactly equivalent to it.</p>
+    </div>
+
     <div id="binding" class="step txt">
         <h1>Binding</h1>
         <p>Binding is the process of associating zero or more symbols with some data.  The simplest kind of binding is a <code>let</code>-binding such as</p>
@@ -365,20 +389,22 @@
         <pre><code>
                 let <u>pattern</u> = <u>value</u>
         </code></pre>
-        <p>In the above code, the symbol <code>abc</code> is a simple pattern that <span title="This happens at compile-time, not runtime">F# attempts to <em>match</em> with the provided value</span>.  Essentially, F# asks the question: what possible type and value should <code>abc</code> have in order to make the two sides equivalent?  In this case, the only possible type is <code>int</code>, and the only possible value is <code>95</code>.  Therefore, the symbol <code>abc</code> is given the value <code>95</code>.</p>
+        <p>In the above code, the symbol <code>abc</code> is a simple <a href="#variable-pattern">variable pattern</a> that <span title="This happens at compile-time, not runtime">F# attempts to <em>match</em> with the provided value</span>.  Essentially, F# asks the question: what possible type and value should <code>abc</code> have in order to make the two sides equivalent?  In this case, the only possible type is <code>int</code>, and the only possible value is <code>95</code>.  Therefore, the symbol <code>abc</code> is given the value <code>95</code>.</p>
         <p>Unlike assignment, this way of interpreting things means that the following code is perfectly legal and compilable:</p>
         <pre><code>
                 let 31337 = 31337
         </code></pre>
-        <p>Here we match the value <code>31337</code> against the constant pattern <code>31337</code>.  The two sides match, and the program proceeds.  But if we were to write</p>
+        <p>Here we match the value <code>31337</code> against the <a href="#constant-pattern">constant pattern</a> <code>31337</code>.  The two sides match, and the program proceeds.  But if we were to write</p>
         <pre><code>
                 let "batman" = "joker"
         </code></pre>
         <p>...then the value <code>"joker"</code> would be matched against the constant pattern <code>"batman"</code>.  The program <span title="Though you would get a warning: the F# compiler is smart enough to catch simple mistakes.">would compile</span> &mdash; the code is perfectly legal!  However, at runtime, executing this would result in a <samp>MatchFailureException</samp>, which is what F# uses to indicate that a matching binding couldn't be found.</p>
-        <p>All of this seems to be a complicated, unnecessary way to do something as simple as assignment.   But binding is used for much more than assignment &mdash; you will see binding at work in many different parts of the language.  Let's look at the <a href="#match-expressions"><code>match</code> expression</a>, which relies upon both patterns and failure.</p>
+        <p>Binding is used for much more than assignment &mdash; you will see binding at work in many different parts of the language.  Let's look at the <a href="#match-expressions"><code>match</code> expression</a>, which relies upon both patterns and failure.</p>
     </div>
 
-    <div id="match-expressions" class="step txt">
+    <div id="match-expressions-todo" class="step txt">
+        <h1>Match expressions</h1>
+        <p>Instead of <code>if</code>-statements, we use <em>match expression</em> for selecting which code to execute.  Assuming that a symbol <code>
     </div>
 
     <div id="types" class="step txt">
