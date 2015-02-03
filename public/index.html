@@ -105,13 +105,40 @@
        <p>There are also things, mostly stemming from the <a href="#functional-style">functional style of programming</a>, which are <a href="#tut-different">different</a>.</p>
    </div>
 
+   <div id="referential-transparency" class="step txt">
+       <h1>Referential transparency</h1>
+       <p><em>Referential transparency</em> means that a symbol is <em>exactly equivalent</em> to its value.  In other words, the value that a symbol was initialized with can be substituted for that symbol at any point, and the meaning of the program will not be changed.</p>
+       <p>Referential transparency makes it easier to reason about your program, and it makes your program easier to optimise.  Consider the following C# code, which is not referentially transparent:</p>
+       <pre><code>
+               int[] myArray = new int[] { 1, 3, 5, 7, 9 };
+               Mogrify(myArray);
+               Console.WriteLine(myArray[2]);
+       </code></pre>
+       <p>Read through the code, and then answer this question: what will be printed to the console?</p>
+       <hr />
+       <p>If you said that it would print out <code>5</code>, then you're incorrect.  The fact is that we can't know what it prints out: the <code>Mogrify</code> method could do anything with <code>myArray</code>, and our understanding of this piece of code is dependent upon our understanding of <code>Mogrify</code>.  In turn, our understanding of <code>Mogrify</code> is likely dependent on our understanding of other methods and objects (and their associated state), which is dependent upon our understanding of yet more methods and objects and <span title="&hellip;lions and tigers and bears&hellip;">&hellip;</span>!</p>
+       <p>By contrast, take a look at this roughly-equivalent F# code:</p>
+       <pre><code>
+               let myList = [1;3;5;7;9]
+               let result = mogrify myList
+               printfn "%d" myList.[2]
+       </code></pre>
+       <p>We know for a fact that <code>5</code> will be printed out.  It doesn't matter what <code>mogrify</code> does; it cannot possibly alter the value of <code>myList</code> because <code>myList</code> is immutable and, therefore, referentially transparent.  Our understanding of the code is not dependent upon understanding what <code>mogrify</code> does, and we can reason about the code in isolation, without needing to understand much more of the program.</p>
+       <p>Furthermore, if we wanted to, we would be able to rewrite the F# as the following exactly-equivalent code:</p>
+       <pre><code>
+               let result = mogrify [1;3;5;7;9]
+               printfn "%d" [1;3;5;7;9].[2]
+       </code></pre>
+       <p>We are guaranteed that this kind of transformation can have no possible impact upon the program's meaning.  A compiler can use this fact to optimise the program in ways that are more difficult to achieve in a non-functional language.</p>
+   </div>
+
    <div id="tut-different" class="step txt">
        <h1>Differences</h1>
        <p>I've broken this down into minor differences and major differences.  The minor ones are easy to get used to; the major ones might require a bit of mental adjustment.</p>
        <h2>Minor differences</h2>
        <ul>
            <li>Indentation is significant.  Unlike in C# and Java, where <code>{</code> and <code>}</code> are used to show blocks and scoping, in F# (and <span title="Python, Ruby, CoffeeScript, Haskell, ...">other languages</span>) the level of indentation shows where a block begins and ends.</li>
-           <li>All variables are <em>immutable</em>: the value of a variable <span title="Yes, I really do mean <q>never</q>!">can <strong>never</strong> be changed</span>.  In fact, all values are immutable: once created, they can never be changed.  I will often use the words <q>symbol</q> or <q>value</q> instead of <q>variable</q> to emphasise this difference.</li>
+           <li>All variables are <em>immutable</em>: the value of a variable <span title="Yes, I really do mean <q>never</q>!">can <strong>never</strong> be changed</span>.  In fact, all values are immutable: once created, they can never be changed.  I will often use the words <q>symbol</q> or <q>value</q> instead of <q>variable</q> to emphasise this difference.  The immutability of variables allows us to have <a href="#referential-transparency">referential transparency</a>.</li>
        </ul>
        <h2>Major differences</h2>
        <ul>
@@ -402,9 +429,47 @@
         <p>Binding is used for much more than assignment &mdash; you will see binding at work in many different parts of the language.  Let's look at the <a href="#match-expressions"><code>match</code> expression</a>, which relies upon both patterns and failure.</p>
     </div>
 
-    <div id="match-expressions-todo" class="step txt">
+    <div id="match-example" class="step txt">
+        <p>Consider the following syntactically-valid, but nonsensical, <code>match</code> expression:</p>
+        <pre><code>
+          match "salt" with
+          | "sugar" -&gt; 1.5
+          | veritas -&gt;
+             match veritas + " water" with
+             | sweet -&gt; 21.3
+             | "salt water" -&gt; 0.5
+        </code></pre>
+        <p>Notice how the indentation rules work: if the code is a single line, then it can be included on the same line as the <code>-&gt;</code>; but if it is more than one line, then it must start on the next line and the entire block must be indented.</p>
+        <ol>
+            <li>The value <code>"salt"</code> is matched against the <a href="#constant-pattern">constant pattern</a> <code>"sugar"</code>.  It doesn't match, so we move on to testing against the next case.</li>
+            <li>The value <code>"salt"</code> is matched against the <a href="#variable-pattern">variable pattern</a> <code>veritas</code>.  The pattern matches, and the value <code>"salt"</code> is <em>bound</em> to the symbol <code>veritas</code>; then the related code is executed.</li>
+            <li>The expression <code>veritas + " water"</code> is evaluated.  The result, <code>"salt water"</code>, is the data that we will be matching our patterns against.</li>
+            <li>The value <code>"salt water"</code> is matched against the <a href="#variable-pattern">variable pattern</a> <code>sweet</code>.  The pattern matches, and the value <code>"salt water"</code> is <em>bound</em> to the symbol <code>sweet</code>; then the related code is executed.</li>
+            <li>The related code is the value <code>21.3</code>.  This is the value which is returned by the <code>match</code> expression.</li>
+        </ol>
+        <p>Notice, as well, that the <a href="#constant-pattern">constant pattern</a> <code>"salt water"</code> would have matched, but it is never checked.  This is because patterns are checked from top-to-bottom, and the previous pattern (<code>sweet</code>) matches the data.</p>
+    </div>
+
+    <div id="match-expressions" class="step txt">
         <h1>Match expressions</h1>
-        <p>Instead of <code>if</code>-statements, we use <em>match expression</em> for selecting which code to execute.  Assuming that a symbol <code>
+        <p>Instead of <code>if</code>-statements, we use <em><code>match</code> expressions</em> for selecting which code to execute.  The syntax of a match expression is</p>
+        <pre><code>
+                match <u>data</u> with
+                | <u>pattern<sub>0</sub></u> -&gt;
+                   <u>code<sub>0</sub></u>
+                | <u>pattern<sub>1</sub></u> -&gt;
+                   <u>code<sub>1</sub></u>
+                &vellip;
+                | <u>pattern<sub><em>n</em></sub></u> -&gt;
+                   <u>code<sub><em>n</em></sub></u>
+        </code></pre>
+        <p>Here's how it works:</p>
+        <ol>
+            <li>The <code><u>data</u></code> is matched against each <code><u>pattern</u></code>, going in order from top to bottom</li>
+            <li>The <em>first</em> pattern which matches has the associated <code><u>code</u></code> executed</li>
+            <li>The <span title="Remember: expressions return values, and <code>match</code> is an <em>expression</em>, not a statement!">value of the <code>match</code> expression</span> is the last value generated by <code><u>code</u></code>.</li>
+        </ol>
+        <p>If no pattern matches, then a <samp>MatchFailureException</samp> is thrown.  You can see an <a href="#match-example">example</a> of how this all works, if you'd like.</p>
     </div>
 
     <div id="types" class="step txt">
