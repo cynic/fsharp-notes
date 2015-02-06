@@ -27,8 +27,12 @@ span.midellipsis {
     margin-right: 0.2em;
 }
 
+pre > code {
+    font-size: 86%;
+}
+
 code {
-   font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', sans-serif;
 }
 pre {
    margin-top: -1em;

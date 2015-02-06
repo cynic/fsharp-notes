@@ -390,6 +390,40 @@
         <p>A variable pattern matches any data, and can later be used to refer to the data that was matched.</p>
     </div>
 
+    <div id="record-pattern" class="step txt">
+        <h1>Record patterns</h1>
+        <p>A <em>record</em> pattern is composed of other patterns (such as <a href="#variable-pattern">variable</a>, <a href="#constant-pattern">constant</a>, <a href="#tuple-pattern">tuple</a>, <a href="#list-pattern">list</a>, or <a href="#wildcard-pattern">wildcard</a> patterns) linked to field names.  For the pattern-match to succeed, the patterns for all the named fields must match.  Only the fields relevant to the pattern-matching need to be named; any unnamed fields do not participate in pattern-matching.</p>
+        <p>For example, consider the record</p>
+        <pre><code>
+        type Date = { Year : int; Month : int; Day : int }
+        </code></pre>
+        <p>&hellip; which is used in the following code:</p>
+        <pre><code>
+        match { Year=2025; Month=4; Day=1 } with
+        | { Year=500000000 } -&gt; "Life on Earth destroyed"
+        | { Month=12; Day=31 } -&gt; "Last day of the year"
+        | { Day=29; Month=2 } -&gt; "Leap-day in a leap-year ^_^"
+        | { Month=12 } -&gt; "End-of-year"
+        | { Day=1; Month=m } -&gt;
+           match m with
+           | 4 -&gt; "April Fools day"
+           | 1 -&gt; "A new year!"
+           | _ -&gt; "Start of the month!"
+        | _ -&gt; "Some unimportant day"
+        </code></pre>
+        <ol>
+            <li>The data that is being matched is a <code>Date</code> record with the fields and values <code>Year=2025</code>, <code>Month=4</code>, and <code>Day=1</code>.</li>
+            <li>The record pattern <code>{ Year=500000000 }</code> consists of a <a href="#constant-pattern">constant pattern</a> which will be matched against the value of the <code>Year</code> field.  The constant pattern does not match.</li>
+            <li>The record pattern <code>{ Month=12; Day=31 }</code> consists of two <a href="#constant-pattern">constant patterns</a> which will be matched against the values of the <code>Month</code> and <code>Day</code> fields respectively.  Neither pattern matches.</li>
+            <li>The record pattern <code>{ Day=29; Month=2 }</code> consists of two <a href="#constant-pattern">constant patterns</a> which will be matched against the values of the <code>Day</code> and <code>Month</code> fields respectively.  Neither pattern matches.</li>
+            <li>The record pattern <code>{ Month=12 }</code> consists of a <a href="#constant-pattern">constant pattern</a> which will be matched against the value of the <code>Month</code> field.  The constant pattern does not match.</li>
+            <li>The record pattern <code>{ Day=1; Month=m }</code> consists of a <a href="#constant-pattern">constant pattern</a> matched against the value of the <code>Day</code> field, and a <a href="#variable-pattern">variable pattern</a> matched against the value of the <code>Month</code> field.  The constant pattern succeeds.  The variable pattern succeeds, and the symbol <code>m</code> is bound to the value <code>4</code>.  All patterns match, so the record pattern matches, and the associated code is executed.</li>
+            <li>The data used in the <code>match</code> expression is <code>4</code> (see <a href="#referential-transparency">referential transparency</a>).</li>
+            <li>The <a href="#constant-pattern">constant pattern</a> <code>4</code> matches, and the associated code is executed.</li>
+            <li>The result of the <code>match</code> expression is <code>"April Fools day"</code>.  This becomes the result of the enclosing <code>match</code> expression as well.</li>
+        </ol>
+    </div>
+
     <div id="wildcard-pattern" class="step txt">
         <h1>The wildcard pattern</h1>
         <p>The <em>wildcard</em> pattern is <code>_</code> (i.e., an underscore).  The wildcard pattern matches any data and ignores it.  It is often used to match against parts of the data that aren't relevant to the computation that will be done.</p>
@@ -419,9 +453,9 @@
         </code></pre>
         <ol>
             <li>The data that is being matched is the <code>string&nbsp;*&nbsp;bool</code> tuple <code>"AAPL", false</code></li>
-            <li>The pattern <code>stock, true</code> consists of a variable pattern and a constant pattern.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern does not match.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
-            <li>The pattern <code>"SMBC", _</code> consists of a constant pattern and a wildcard pattern.  The constant pattern does not match.  The wildcard pattern matches.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
-            <li>The pattern <code>stock, false</code> consists of a variable pattern and a constant pattern.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern matches.  Because all of the patterns in the tuple pattern match, the match succeeds and the associated code is executed.</li>
+            <li>The pattern <code>stock, true</code> consists of a <a href="#variable-pattern">variable pattern</a> and a <a href="#constant-pattern">constant pattern</a>.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern does not match.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
+            <li>The pattern <code>"SMBC", _</code> consists of a <a href="#constant-pattern">constant pattern</a> and a <a href="#wildcard-pattern">wildcard pattern</a>.  The constant pattern does not match.  The wildcard pattern matches.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
+            <li>The pattern <code>stock, false</code> consists of a <a href="#variable-pattern">variable pattern</a> and a <a href="#constant-pattern">constant pattern</a>.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern matches.  Because all of the patterns in the tuple pattern match, the match succeeds and the associated code is executed.</li>
         </ol>
     </div>
 
@@ -616,7 +650,7 @@
                 Related=["ABOVE"; "3D"; "Ian Bone"]
              }
         </code></pre>
-        <p>&hellip; is a record with three fields (<code>Name</code>, <code>Talent</code>, and <code>Related</code>).  The structure of records, unlike <a href="#tuples">tuples</a> and <a href="#lists">lists</a>, must be <a href="#ndcd">defined</a> before they can be <a href="#ndcd">created</a>.  Records are defined using the syntax</p>
+        <p>&hellip; is a record with three fields (<code>Name</code>, <code>Talent</code>, and <code>Related</code>).  Records, unlike <a href="#tuples">tuples</a> and <a href="#lists">lists</a>, must be <a href="#ndcd">defined</a> before they can be created &mdash; and since F# parses files top-to-bottom, the definition must occur <em>above</em> the creation in the file.  In a multi-file project, the definition must either occur above the creation in the file, or it must occur in a file that is parsed before the file that creates the record.  Records are defined using the syntax</p>
         <pre><code>
                 type <u>RecordTypeName</u> =
                    {
@@ -626,7 +660,7 @@
                       <u>Field<sub>n</sub></u> : <u>TypeOfField<sub>n</sub></u>
                    }
         </code></pre>
-        <p>The <code><u>RecordTypeName</u></code> is the type of the record: when the type of the record needs to be referred to (e.g. in a <a href="#type-annotations">type annotation</a>), this is the text that must be used.  It is conventional for field names to start with an uppercase letter.  The fields can be of <span title="including <code><u>RecordTypeName</u></code>, actually. Records can be recursive!">any known type</span>.  To define the record shown in the above example, one would write:</p>
+        <p>The <code><u>RecordTypeName</u></code> is the <a href="#ndcd">name</a> of the record.  It is conventional for field names to start with an uppercase letter.  Instead of separating the fields with newlines, you could choose to separate them with semicolons.  Fields can be of <span title="including <code><u>RecordTypeName</u></code>, actually. Records can be recursive!">any known type</span>.  To define the record shown in the above example, one could write:</p>
         <pre><code>
                 type Artist =
                    {
@@ -635,7 +669,20 @@
                       Related : string list
                    }
         </code></pre>
-        <p>The 
+        <p>A record is <a href="#ndcd">created</a> by using <span title="curly brackets">braces</span> and providing values for <em>all</em> the fields.  Fields may be separated by newlines, as in the example above, or they may be separated by semicolons.  For example,</p>
+        <pre><code>
+                { X=22.9; Y=-3.6; Z=100.0 }
+        </code></pre>
+        <p>&hellip; would create a record that is defined as</p>
+        <pre><code>
+    type ThreeDPoint = { X : float; Y : float; Z : float }
+        </code></pre>
+        <p>If two record definitions contain the same field name, then F# may have some difficulty figuring out which record type you intend to create.  In that case, you can remove the ambiguity by specifying the record type as part of the first field name during creation.  For example,</p>
+        <pre><code>
+                { ThreeDPoint.X=22.9; Y=-3.6; Z=100.0 }
+        </code></pre>
+        <p>A record is <a href="#ndcd">decomposed</a> using a <a href="#record-pattern">record pattern</a>.</p>
+        <p>The last data type that we'll explore in this course is the <a href="#discriminated-unions">discriminated union</a>.</p>
     </div>
 
     <div id="types" class="step txt">
