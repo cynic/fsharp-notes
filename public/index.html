@@ -685,6 +685,29 @@
         <p>The last data type that we'll explore in this course is the <a href="#discriminated-unions">discriminated union</a>.</p>
     </div>
 
+    <div id="discriminated-unions" class="step txt">
+        <h1>Discriminated Unions</h1>
+        <p>A <em>discriminated union</em> represents <em>one</em> of the items from a limited set of possible categories.  Unlike <a href="#lists">lists</a>, <a href="#tuples">tuples</a>, and <a href="#records">records</a>, a discriminated union has no comparable analogue in mainstream object-oriented languages.  In a discriminated union, each category is called a <em>case</em> (<span title="I will use the terms interchangeably">or <em>tag</em></span>), and each case can optionally have some data associated with it.</p>
+        <h2>Basic Discriminated Unions</h2>
+        <p>To <a href="#ndcd">define</a> a basic discriminated union, use the syntax</p>
+        <pre><code>
+                type <u>TypeName</u> =
+                | <u>Case<sub>0</sub></u>
+                | <u>Case<sub>1</sub></u>
+                &vellip;
+                | <u>Case<sub>n</sub></u>
+        </code></pre>
+        <p>The <a href="#ndcd">name</a> of the discriminated union is <code><u>TypeName</u></code>.  To <a href="#ndcd">create</a> a discriminated union of this type, use the name of the <em>case</em> that is being created (e.g. <code><u>Case<sub>1</sub></u></code>).</p>
+        <p>An example may help to see how this works.  Let's use a discriminated union to represent popular desktop operating systems.  The market is split between Windows, OSX, and Linux: <span title="As of December 2014, see <a href=&quot;http://www.netmarketshare.com/operating-system-market-share.aspx?qprid=10&amp;qpcustomd=0&quot;>here</a>">all other desktop operating systems have approximately 0.5% of the market when combined</span>.  So, we'll represent the operating systems with the following discriminated union:</p>
+        <pre><code>
+                type OS =
+                | Windows
+                | OSX
+                | Linux
+        </code></pre>
+        <p>Note that an operating system cannot <em>simultaneously</em> be more than one of these.  To create an <code>OS</code>, you would type either <code>Windows</code>, <code>OSX</code>, or <code>Linux</code>.</p>
+    </div>
+
     <div id="types" class="step txt">
         <h1>Types</h1>
         <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>

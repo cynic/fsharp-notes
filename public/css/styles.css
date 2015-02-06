@@ -70,3 +70,6 @@ th {
 	 text-align:center;
 	 color:#ffffff;
 }
+span.optional {
+    opacity: 0.75;
+}
