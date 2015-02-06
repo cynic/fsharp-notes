@@ -6,13 +6,27 @@ h2 {
     font-weight: bold;
     font-size: 115%;
 }
-sub { /* see Gist https://gist.github.com/unruthless/413930 */
+sub, sup { /* see Gist https://gist.github.com/unruthless/413930 */
     font-size:67%;
     line-height: 0;
     position: relative;
     vertical-align:baseline;
+}
+sub {
     bottom: -0.35em;
 }
+sup {
+    top: -0.5em;
+}
+span.midellipsis {
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+    top: -0.2em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+}
+
 code {
    font-family: 'Nunito', sans-serif;
 }

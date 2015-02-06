@@ -101,6 +101,7 @@
            </li>
            <li>The usual C-style mathematical operators (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>) are all present, and have the meanings you would expect.</li>
            <li>The scoping rules for variables are mostly the same as the ones you're used to.</li>
+           <li>The logical operators are mostly the same: <code>&&</code> and <code>||</code> are used for <q>and</q> and <q>or</q> respectively.  However, the <q>not</q> operator is a function called <code>not</code> rather than being an operator; the differences will become clear later.</li>
        </ul>
        <p>There are also things, mostly stemming from the <a href="#functional-style">functional style of programming</a>, which are <a href="#tut-different">different</a>.</p>
    </div>
@@ -389,6 +390,11 @@
         <p>A variable pattern matches any data, and can later be used to refer to the data that was matched.</p>
     </div>
 
+    <div id="wildcard-pattern" class="step txt">
+        <h1>The wildcard pattern</h1>
+        <p>The <em>wildcard</em> pattern is <code>_</code> (i.e., an underscore).  The wildcard pattern matches any data and ignores it.  It is often used to match against parts of the data that aren't relevant to the computation that will be done.</p>
+    </div>
+
     <div id="constant-pattern" class="step txt">
         <h1>Constant patterns</h1>
         <p>A <em>constant</em> pattern is a literal data value.  For example, <code>5</code> is a constant pattern.  Other examples of constant patterns:</p>
@@ -399,6 +405,100 @@
             <li><code>2602</code></li>
         </ul>
         <p>A constant pattern only matches data that is exactly equivalent to it.</p>
+    </div>
+
+    <div id="tuple-pattern" class="step txt">
+        <h1>Tuple patterns</h1>
+        <p>A <em>tuple</em> pattern is composed of other patterns (such as <a href="#variable-pattern">variable</a>, <a href="#constant-pattern">constant</a>, or <a href="#wildcard-pattern">wildcard</a> patterns) separated by commas.  The number of commas in the tuple pattern <strong>must</strong> match the number of commas in the tuple.  To put it another way, the tuple pattern must contain a pattern for each of the elements in the tuple.  If <em>all</em> of the constituent patterns match the input, then the tuple pattern matches the input.</p>
+        <p>For example, consider the <a href="#match-expressions"><code>match</code> expression</a></p>
+        <pre><code>
+                match "AAPL", false with
+                | stock, true -&gt; "Bought " + stock
+                | "SMBC", _ -&gt; "Not allowed"
+                | stock, false -&gt; "Sold " + stock
+        </code></pre>
+        <ol>
+            <li>The data that is being matched is the <code>string&nbsp;*&nbsp;bool</code> tuple <code>"AAPL", false</code></li>
+            <li>The pattern <code>stock, true</code> consists of a variable pattern and a constant pattern.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern does not match.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
+            <li>The pattern <code>"SMBC", _</code> consists of a constant pattern and a wildcard pattern.  The constant pattern does not match.  The wildcard pattern matches.  Because <em>all</em> of the tuple pattern doesn't match, the match fails.</li>
+            <li>The pattern <code>stock, false</code> consists of a variable pattern and a constant pattern.  The variable pattern matches, and <code>stock</code> is bound to <code>"AAPL"</code>.  The constant pattern matches.  Because all of the patterns in the tuple pattern match, the match succeeds and the associated code is executed.</li>
+        </ol>
+    </div>
+
+    <div id="list-pattern" class="step txt">
+        <h1>List patterns</h1>
+        <p>List patterns are composed of other patterns (such as <a href="#variable-pattern">variable</a>, <a href="#constant-pattern">constant</a>, or <a href="#wildcard-pattern">wildcard</a> patterns) and take one of two forms: as a <em>cons</em> pattern or as a <em>list</em> pattern.</p>
+        <h2>Cons pattern</h2>
+        <p>A <em>cons</em> pattern matches the list as a series of elements at the start of the list, and the rest of the list.  The element at the start of the list is called the <em>head</em>, and the rest of the list is called the <em>tail</em>.  The syntax of the pattern is</p>
+        <pre><code>
+                <u>head<sub>0</sub></u>::<u>head<sub>1</sub></u>::<span class="midellipsis">&hellip;</span>::<u>head<sub><em>n</em></sub></u>::<u>tail</u>
+        </code></pre>
+        <p>The head is matched by the <code><u>head</u></code> pattern, and the tail is matched by the <code><u>tail</u></code> pattern.  The <em>cons</em> pattern is extensible since one can specify many of the starting elements to be captured.  Note that a <code><u>head</u></code> pattern matches an individual element, whereas the <code><u>tail</u></code> is a list of items.  You can see an <a href="#consp-example">example</a>, if you'd like.</p>
+        <p>The cons pattern is often used to split off one or more elements from the head of the list, leaving the tail of the list to be processed.  We will use it to go through elements in a list one-at-a-time, until all that remains is an empty list.</p>
+        <h2>List pattern</h2>
+        <p>A <em>list</em> pattern matches the list as an exact set of elements.  The syntax of the pattern is</p>
+        <pre><code>
+                [<u>pattern<sub>0</sub></u>; <u>pattern<sub>1</sub></u>; <span class="midellipsis">&hellip;</span>; <u>pattern<sub>n</sub></u>]
+        </code></pre>
+        <p>Each element is matched by its own pattern, and the length of the list must exactly match the number of <code><u>pattern</u></code>s.  You can see an <a href="#listp-example">example</a> of this, if you'd like.</p>
+        <p>The list pattern is less-frequently used than the cons pattern.  However, one list pattern that you will often see is <code>[]</code>, which matches only when the list has no elements.</p>
+    </div>
+
+    <div id="consp-example" class="step txt">
+        <h1>Cons pattern example</h1>
+        <p>Given the code</p>
+        <pre><code>
+                match [2;4;8;16] with
+                | h::i::t -&gt;
+                   let rest =
+                      match t with
+                      | j::k::_ -&gt; j = 2*i && k = 2*j
+                      | j::_ -&gt; j = 2*i
+                      | _ -&gt; true
+                   i = 2*h && rest
+                | _ -&gt; true
+        </code></pre>
+        <p>This code tests to check whether the start of the list <span title="It's assumed that a single-element list and a zero-element list are doubling sequences consisting of one and zero elements respectively.">is a doubling sequence</span>.</p>
+        <ol>
+            <li>The data that we will match against is the list <code>[2;4;8;16]</code>.</li>
+            <li>The pattern <code>h::i::t</code> consists of 3 <a href="#variable-pattern">variable patterns</a>.  <code>h</code> matches and is bound to <code>2</code>, <code>i</code> matches and is bound to 4, and <code>t</code> matches and is bound to <code>[8;16]</code>.  All matches succeeded, so the cons pattern succeeds and we start to execute the associated code.</li>
+            <li>The symbol <code>rest</code> obtains its value from a <a href="#match-expressions"><code>match</code> expression</a>.</li>
+            <li>The data used in the <code>match</code> expression is <code>[8;16]</code> (remember that symbols are <a href="#referential-transparency">referentially transparent</a>).</li>
+            <li>The pattern <code>j::k::_</code> consists of 2 <a href="#variable-pattern">variable patterns</a> and 1 <a href="#wildcard-pattern">wildcard pattern</a>.  <code>j</code> matches and is bound to <code>8</code>, <code>k</code> matches and is bound to <code>16</code>, and <code>_</code> <span title="If it was a variable pattern, it would be bound to <code>[]</code>">matches</span>.  All matches succeeded, so the cons pattern succeeds and we start to execute the associated code.</li>
+            <li>The expression <code>j = 2*i && k = 2*j</code> is executed, and the result of the <code>match</code> expression is therefore <code>true</code>.</li>
+            <li>The symbol <code>rest</code> is bound to the value <code>true</code></li>
+            <li>The expression <code>i = 2*h && rest</code> is executed, with the result being <code>true</code>.</li>
+            <li>Therefore, the result of the overall <code>match</code> expression is <code>true</code></li>
+        </ol>
+    </div>
+
+    <div id="listp-example" class="step txt">
+        <h1>List pattern example</h1>
+        <p>Given the code</p>
+        <pre><code>
+                match [4;3] with
+                | [] -&gt; "Canceled roll"
+                | [1;1] -&gt; "Uncommon: minimum roll"
+                | [6;6] -&gt; "Uncommon: maximum roll"
+                | [a;b] -&gt;
+                   match a + b with
+                   | 7 -&gt; "Most common roll"
+                   | 6 -&gt; "Common less-than-average roll"
+                   | 8 -&gt; "Common more-than-average roll"
+                   | _ -&gt; "Some other roll"
+                | _ -&gt; "More or less than 2 dice were rolled"
+        </code></pre>
+        <p>This code gives some indication of how common the result is if two 6-sided dice are rolled.</p>
+        <ol>
+            <li>The data that we will match against is the list <code>[4;3]</code>.  Each element in the list represents a dice roll.</li>
+            <li>The pattern <code>[]</code> is a list pattern containing 0 elements.  Since the data contains 2 elements, this pattern match does not succeed.</li>
+            <li>The pattern <code>[1;1]</code> is a list pattern containing 2 <a href="#constant-pattern">constant patterns</a>.  Neither the first nor the second constant pattern succeeds.</li>
+            <li>The pattern <code>[6;6]</code> is a list pattern containing 2 <a href="#constant-pattern">constant patterns</a>.  Neither the first nor the second constant pattern succeeds.</li>
+            <li>The pattern <code>[a;b]</code> is a list pattern containing 2 <a href="#variable-pattern">variable patterns</a>.  <code>a</code> matches and is bound to <code>4</code>, and <code>b</code> matches and is bound to <code>3</code>.  All pattern matches succeeded, so the list pattern succeeds and we start executing the associated code.</li>
+            <li>The expression <code>a + b</code> is evaluated, and the result is <code>7</code> (see <a href="#referential-transparency">referential transparency</a>).  The data that we will match against is <code>7</code>.</li>
+            <li>The pattern <code>7</code> is a <a href="#constant-pattern">constant pattern</a>.  The pattern matches, and we start executing the associated code.</li>
+            <li>The result of the <code>match</code> expression is <code>"Most common roll"</code>, and this becomes the result of the larger <code>match</code> expression as well.</li>
+        </ol>
     </div>
 
     <div id="binding" class="step txt">
@@ -470,12 +570,78 @@
             <li>The <span title="Remember: expressions return values, and <code>match</code> is an <em>expression</em>, not a statement!">value of the <code>match</code> expression</span> is the last value generated by <code><u>code</u></code>.</li>
         </ol>
         <p>If no pattern matches, then a <samp>MatchFailureException</samp> is thrown.  You can see an <a href="#match-example">example</a> of how this all works, if you'd like.</p>
+        <p>Now that we know about <code>match</code> expressions, we have a programming construct that will let us <a href="#ndcd">explore</a> patterns and <span title="Types made up of different types. For example, in C#, a class is a composite type.">composite types</span> in F#.  These are used pervasively throughout the language.  We'll start with one of the simpler data-types, the <a href="#lists">list</a>, and then move on to <span title="Tuples, records, and discriminated unions">the rest</span>.</p> 
+    </div>
+
+    <div id="lists" class="step txt">
+        <h1>Lists</h1>
+        <p>A list is an ordered series of elements, where each element must be of the same type.  For example,</p>
+        <pre><code>
+                [9;3;2;8;2;7]
+        </code></pre>
+        <p>&hellip; is a list of 6 <code>int</code>s.  A list is <a href="#ndcd">named</a> by the type of the element and the word <q>list</q>:</p>
+        <pre><code>
+                <u>elementType</u> list
+        </code></pre>
+        <p>&hellip; so the <a href="#ndcd">name</a> of the above list would be <code>int&nbsp;list</code>.  A list is <a href="#ndcd">created</a> in one of three main ways:</p>
+        <ul>
+            <li>By writing down the elements of the list one-by-one, separated by semicolons, with the whole list in square brackets.  For example, <code>[1; 3; 2; 4; 3]</code> creates a list with 5 elements.</li>
+            <li>By concatenating an element to an existing list using the <code>::</code> operator (pronounced <q>cons</q>, for <a href="http://en.wikipedia.org/wiki/Cons" target="_new">historical reasons</a>).  For example, <code>1::[3;2;4;3]</code> creates a list with 5 elements.  The <code>::</code> operator is right-associative, so one can use it to create the same list by writing <code>1::3::[2;4;3]</code> or even <code>1::3::2::4::3::[]</code>.</li>
+            <li>By concatenating two lists together using the <code>@</code> operator.  For example, <code>[1;3] @ [2;4;3]</code> creates a list with 5 elements.  This method of creation is often the slowest method of creating a list.</li>
+        </ul>
+        <p>There are <a href="https://msdn.microsoft.com/en-us/library/dd233224.aspx" target="_new">other ways to create lists</a>, but those ways tend to only be usable in specific circumstances.</p>
+        <p>To <a href="#ndcd">decompose</a> a list, we use one of the <a href="#list-pattern">list patterns</a>.</p>
+        <p>The next data structure that we'll look at is the <a href="#tuples">tuple</a>.</p>
+    </div>
+
+    <div id="tuples" class="step txt">
+        <h1>Tuples</h1>
+        <p>A tuple is an ordered grouping of data, where the data is allowed to be of different types.  For example,</p>
+        <pre><code>
+                265, "Liu Hui approximates &pi; to 3.1416"
+        </code></pre>
+        <p>&hellip; is a tuple consisting of an <code>int</code> and a <code>string</code>.  We would <a href="#ndcd">name</a> this tuple as <code>int&nbsp;*&nbsp;string</code>.  A tuple is <a href="#ndcd">created</a> by using a comma to separate the elements, as above.  Although you will sometimes see brackets used around a tuple, it is important to understand that brackets have nothing to do with creating the tuple!  Brackets are put in to clarify precedence, which is the same purpose that they are used for in mathematical expressions.</p>
+        <p>Tuples are reasonably efficient and sensible data structures to use for groups of 2 to 4 items.  They become slightly less-efficient if they have more than 7 elements, but it's highly unlikely that you'll see any difference unless the block of code they're used in is very performance-sensitive.  For larger groupings of data, it's better to use another composite data type.</p>
+        <p>To <a href="#ndcd">decompose</a> a tuple, we use a <a href="#tuple-pattern">tuple pattern</a>.</p>
+        <p>The next data type that we'll cover is <a href="#records">records</a>.</p>
+    </div>
+
+    <div id="records" class="step txt">
+        <h1>Records</h1>
+        <p>A record is a grouping of data into fields.  For example,</p>
+        <pre><code>
+             {
+                Name="Banksy"
+                Talent=9001
+                Related=["ABOVE"; "3D"; "Ian Bone"]
+             }
+        </code></pre>
+        <p>&hellip; is a record with three fields (<code>Name</code>, <code>Talent</code>, and <code>Related</code>).  The structure of records, unlike <a href="#tuples">tuples</a> and <a href="#lists">lists</a>, must be <a href="#ndcd">defined</a> before they can be <a href="#ndcd">created</a>.  Records are defined using the syntax</p>
+        <pre><code>
+                type <u>RecordTypeName</u> =
+                   {
+                      <u>Field<sub>0</sub></u> : <u>TypeOfField<sub>0</sub></u>
+                      <u>Field<sub>1</sub></u> : <u>TypeOfField<sub>1</sub></u>
+                      &vellip;
+                      <u>Field<sub>n</sub></u> : <u>TypeOfField<sub>n</sub></u>
+                   }
+        </code></pre>
+        <p>The <code><u>RecordTypeName</u></code> is the type of the record: when the type of the record needs to be referred to (e.g. in a <a href="#type-annotations">type annotation</a>), this is the text that must be used.  It is conventional for field names to start with an uppercase letter.  The fields can be of <span title="including <code><u>RecordTypeName</u></code>, actually. Records can be recursive!">any known type</span>.  To define the record shown in the above example, one would write:</p>
+        <pre><code>
+                type Artist =
+                   {
+                      Name : string
+                      Talent : int
+                      Related : string list
+                   }
+        </code></pre>
+        <p>The 
     </div>
 
     <div id="types" class="step txt">
         <h1>Types</h1>
         <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>
-        <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#defined-created-decomposed">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
+        <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#ndcd">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
         <ul>
             <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
             <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
@@ -490,10 +656,10 @@
         <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
     </div>
     
-    <div id="defined-created-decomposed" class="step txt">
-        <h1>Definition, Creation, and Decomposition</h1>
-        <p>It sounds complicated to say that every composite type has a way of being defined, created, and decomposed &hellip; but it's not complicated.  In fact, you already know how to do it, and you've been doing it for years in a non-functional language.  If you don't believe me, read on, and you'll see that it's true!</p>
-        <p>Let's use C# as our language, and a class as our composite type.  We'll start with an empty class.</p>
+    <div id="ndcd" class="step txt">
+        <h1>Naming, Definition, Creation, and Decomposition</h1>
+        <p>Every composite type has a way of being named, defined, created, and decomposed.  This sounds complicated, but it's not:  in fact, you already know how to do it, and you've been doing it for years in a non-functional language.  If you don't believe me, read on, and you'll see that it's true!</p>
+        <p>Let's use C# as our language, and a class as our composite type.  We'll start with an empty class, which we shall <em>name</em> <code>Wtf</code>.</p>
         <pre><code>
                 class Wtf {
                 }
@@ -512,9 +678,10 @@
         <pre><code>
                 int whatever = v.Ftw;
         </code></pre>
-        <p>Take a look at the code above.  It's not unfamiliar or complex; by now, you should have created and used hundreds of classes in your own projects.  Can you see that you write completely different code to <em>define</em>, <em>create</em>, and <em>decompose</em> a composite type in C#?  In <span title="C, Python, Java, JavaScript, ...">other languages</span> that you've used, you'll notice exactly the same definition, creation, and decomposition of data types.</p>
-        <p>Definition, creation, and decomposition are all interrelated.  After all, you cannot create something that you haven't defined; you can't decompose what hasn't been defined or created; and there's no point in defining or creating unless you can decompose to get the data out.</p>
-        <p>The same applies to types in F#.  Each type has a way in which it is defined; a way in which it is created; and ways in which it is decomposed.  Once you learn how to define, create, and decompose a type, you will be able to use a type.</p>
+        <p>Take a look at the code above.  It's not unfamiliar or complex; by now, you should have created and used hundreds of classes in your own projects.  Can you see that you write completely different code to <em>name</em>, <em>define</em>, <em>create</em>, and <em>decompose</em> a composite type in C#?  In <span title="C, Python, Java, JavaScript, ...">other languages</span> that you've used, you'll notice similar naming, definition, creation, and decomposition of data types.</p>
+        <p>Not all composite types are complex enough to warrant a definition step.  For example, in C#, an array is a composite type, but you don't have to define it: you simply <span title="e.g. <code>int[]</code>">name it</span>, <span title="e.g. <code>new int[5]</code>">create it</span>, and <span title="e.g. <code>myArray[5]</code>">decompose it</span>.</p>
+        <p>Naming, definition, creation, and decomposition are all interrelated.  After all, you cannot create something that you haven't defined; you can't decompose what hasn't been defined or created; there's no point in defining or creating unless you can decompose to get the data out; and you can't use a type in another composite type without naming the type you want to use.</p>
+        <p>The same applies to types in F#.  Each type has a way in which it is named; a way in which it is defined; a way in which it is created; and ways in which it is decomposed.  Once you learn how to name, define, create, and decompose a type, you will be able to use a type.</p>
     </div>
     
     <script src="impresst.js/impresst.js"></script>
