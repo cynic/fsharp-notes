@@ -669,19 +669,25 @@
                       Related : string list
                    }
         </code></pre>
-        <p>A record is <a href="#ndcd">created</a> by using <span title="curly brackets">braces</span> and providing values for <em>all</em> the fields.  Fields may be separated by newlines, as in the example above, or they may be separated by semicolons.  For example,</p>
-        <pre><code>
-                { X=22.9; Y=-3.6; Z=100.0 }
-        </code></pre>
-        <p>&hellip; would create a record that is defined as</p>
-        <pre><code>
-    type ThreeDPoint = { X : float; Y : float; Z : float }
-        </code></pre>
-        <p>If two record definitions contain the same field name, then F# may have some difficulty figuring out which record type you intend to create.  In that case, you can remove the ambiguity by specifying the record type as part of the first field name during creation.  For example,</p>
-        <pre><code>
-                { ThreeDPoint.X=22.9; Y=-3.6; Z=100.0 }
-        </code></pre>
-        <p>A record is <a href="#ndcd">decomposed</a> using a <a href="#record-pattern">record pattern</a>.</p>
+        <p>A record is <a href="#ndcd">created</a> in one of two ways:</p>
+        <ol>
+            <li>
+                <p>By using <span title="curly brackets">braces</span> and providing values for <em>all</em> the fields.  This is called a <em>record expression</em>.  Fields may be separated by newlines, as in the example above, or they may be separated by semicolons.  Syntactically,</p>
+                <pre><code>
+{ <u>Field<sub>0</sub></u>=<u>Value<sub>0</sub></u>; <u>Field<sub>1</sub></u>=<u>Value<sub>1</sub></u>; &hellip; ; <u>Field<sub>n</sub></u>=<u>Value<sub>n</sub></u> }
+                </code></pre>
+                <p>For example, <code>{X=22.9; Y=&nbsp;-3.6}</code> would create a record, assuming that a definition such as <code>type Point = {X:float; Y:float}</code> exists.</p>
+                <p>If two record definitions contain the same field name, then F# may have some difficulty figuring out which record type you intend to create.  In that case, you can remove the ambiguity by specifying the record type as part of the first field name during creation.  For example, <code>{Point.X=22.9; Y=&nbsp;-3.6}</code>.</p>
+            </li>
+            <li>
+                <p>By using the data in another record as the basis for a new record &mdash; this is called a <em>copy &amp; update</em> record expression.  As with a <q>normal</q> record expression, braces are used.  Unlike a <q>normal</q> record expression, only the fields to be updated need to be specified.  The syntax of a copy &amp; update record expression is</p>
+                <pre><code>
+{ <u>basisRecord</u> with <u>Field<sub>0</sub></u>=<u>Value<sub>0</sub></u>; &hellip; ; <u>Field<sub>n</sub></u>=<u>Value<sub>n</sub></u> }
+                </code></pre>
+                <p>For example, assume that we already have a record <code>{X=22.9; Y=&nbsp;-3.6}</code>; for convenience, let's assume that this is given the symbolic name <code>orig</code>.  We wish to create a new record with the same X-coordinate, but with a Y-coordinate of 7.24.  This can be achieved by the expression <code>{orig with Y=7.24}</code>.</p>
+            </li>
+        </ol>
+        <p>A record can be <a href="#ndcd">decomposed</a> using a <a href="#record-pattern">record pattern</a>.  Each field of the record can also be accessed using <em>dot syntax</em>: for example, given a record <code>k</code> of type <span title="See top of this section"><code>Artist</code></span>, the code <code>k.Name</code> will give the artist's name.  Note, however, that record pattern decomposition tends to be much more powerful, so <span title="With experience, you'll get a good feel for when to use each.">try to prefer using it instead of dot syntax</span>.</p>
         <p>The last data type that we'll explore in this course is the <a href="#discriminated-unions">discriminated union</a>.</p>
     </div>
 
