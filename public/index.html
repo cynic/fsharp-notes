@@ -319,68 +319,95 @@
       <p>It seems obvious that first-class functions are better than the <q>conventional</q> methods and functions that you've seen so far in your Computer Science courses.  First-class functions can do everything that <q>ordinary</q> functions can do, and more &mdash; they're like <span title="Not to be taken as an endorsement of steroid use.  If you want medical advice, go and see a doctor, not a Computer Scientist.">functions on steroids</span>.  But what about <em>purity</em> and <em>immutability</em>?  <a href="#fp-benefits">Why are those useful?</a></p>
    </div>
 
-    <div id="functions-part-1" class="step txt">
-		<h1>Functions, Part I</h1>
-      <p>A function is something that takes <em>one</em> input and produces <em>one</em> output.  Another way of phrasing the same thing is: a function is something which, when given an input, will produce an output.</p>
-      <p>We'll talk about F# functions later on.  For now, let's consider an abstract function which, when given an integer <code>n</code>, will give back <code>n+5</code>.  In C#, you might have written</p>
-      <pre><code>
-         int AddFive(int n) {
-            return n + 5;
-         }
-      </code></pre>
-      <p>So, if I give <code>8</code> as an input, I'll get back <code>13</code> as the output.  We can write down the essentials of this abstract function as:</p>
-      <pre><code>
-         n -&gt; n + 5
-      </code></pre>
-      <p>On the left side of the <code>-&gt;</code>, we have the <em>input</em>.  On the right side, we have the <em>output</em>.</p>
-      <p>Now, a function is nice, but it does me no good to just have a function sitting around and doing nothing.  I'd like to <em>apply</em> it (in Computer Science, we'd say that I want to <em>call</em> the function), and to do that I must give it an input.  To give this function an input, I'll enclose the function in parentheses, and give it the input just after the parentheses, separated by a space.  That will make it easy for me to see where the function ends and where the input begins.</p>
-      <pre><code>
-         (n -&gt; n + 5) 8
-      </code></pre>
-      <p>Remember: when a function is given an input, it provides its output.  So the above expression is semantically equivalent to this:</p>
-      <pre><code>
-         13
-      </code></pre>
-      <p>Note that, because a function always produces an output, all functions are <a href="#functional-style">expressions</a>.</p>
-      <p>Make sure that you see how this works &mdash; and, especially, make sure that you understand the definition of a <em>function</em>.  Also pay attention to the notation I've been using for an abstract function.  You'll see me using the same notation later on.</p>
-      <p>When you're ready to move on, let's take a look at what <a href="#functions-part-2">a real function looks like in F#</a>.</p>
-    </div>
+   <div id="functions-part-1" class="step txt">
+       <h1>Functions, Part I</h1>
+       <p>A function is something that takes <em>one</em> input and produces <em>one</em> output.  Another way of phrasing the same thing is: a function is something which, when given an input, will produce an output.</p>
+       <p>We'll talk about F# functions later on.  For now, let's consider an abstract function which, when given an integer <code>n</code>, will give back <code>n+5</code>.  In C#, you might have written</p>
+       <pre><code>
+               int AddFive(int n) {
+                   return n + 5;
+               }
+       </code></pre>
+       <p>So, if I give <code>8</code> as an input, I'll get back <code>13</code> as the output.  We can write down the essentials of this abstract function as:</p>
+       <pre><code>
+               n -&gt; n + 5
+       </code></pre>
+       <p>On the left side of the <code>-&gt;</code>, we have the <em>input</em>.  On the right side, we have the <em>output</em>.</p>
+       <p>Now, a function is nice, but it does me no good to just have a function sitting around and doing nothing.  I'd like to <em>apply</em> it (in Computer Science, we'd say that I want to <em>call</em> the function), and to do that I must give it an input.  To give this function an input, I'll enclose the function in parentheses, and give it the input just after the parentheses, separated by a space.  That will make it easy for me to see where the function ends and where the input begins.</p>
+       <pre><code>
+               (n -&gt; n + 5) 8
+       </code></pre>
+       <p>Remember: when a function is given an input, it provides its output.  So the above expression is semantically equivalent to this:</p>
+       <pre><code>
+               13
+       </code></pre>
+       <p>Note that, because a function always produces an output, all functions are <a href="#functional-style">expressions</a>.</p>
+       <p>Make sure that you see how this works &mdash; and, especially, make sure that you understand the definition of a <em>function</em>.  Also pay attention to the notation I've been using for an abstract function.  You'll see me using the same notation later on.</p>
+       <p>When you're ready to move on, let's take a look at what <a href="#functions-part-2">a real function looks like in F#</a>.</p>
+   </div>
 
-    <div id="functions-part-2" class="step txt">
-      <h1>Functions, Part II</h1>
-      <p>In F#, here's how you would write down the abstract <code>n -&gt; n + 5</code> function:</p>
-      <pre><code>
-         fun n -&gt; n + 5
-      </code></pre>
-      <p>And here's how you would <em>apply</em> (<span title="I'll use both terms interchangeably">or <em>call</em></span>) a function:</p>
-      <pre><code>
-         (fun n -&gt; n + 5) 8
-      </code></pre>
-      <p>...giving you the result</p>
-      <pre><code>
-         13
-      </code></pre>
-      <p>You'll note that this syntax is almost exactly the same as the abstract notation that <a href="#functions-part-1">you saw before</a>.  There's no need for an explicit <q>return</q> statement: the output of a function is the last value that the function generates.</p>
-      <hr />
-      <p>Be sure that you understand what's going on before we proceed!  Here's a recap of the important points:</p>
-      <ul>
-         <li>A function always takes <em>exactly one</em> input and produces <em>exactly one</em> output</li>
-         <li>The input is on the left of the <code>-&gt;</code> and the output is on the right of the <code>-&gt;</code>
-         <li>A function is an <a href="#functional-style">expression</a></li>
-         <li>The input to a function is separated from the function by a space</li>
-         <li>When you give a function its input (i.e., when you <em>call</em> the function), the result is its output</li>
-      </ul>
-      
-    </div>
-
-    <div id="data" class="step txt">
-        <h1>Data</h1>
-        <p>Data in F# comes in many <a href="#types">types</a>.  Both data and <a href="#functions-part-1">functions</a> can be <a href="#binding">bound</a> to <em>symbols</em> (or <span title="I will use the two terms interchangeably"><em>variables</em></span>), which makes them more convenient to use.</p>
-    </div>
+   <div id="functions-part-2" class="step txt">
+       <h1>Functions, Part II</h1>
+       <p>In F#, here's how you would write down the abstract <code style="white-space:nowrap">n -&gt; n + 5</code> function:</p>
+       <pre><code>
+               fun n -&gt; n + 5
+       </code></pre>
+       <p>The <code>n</code> in that code isn't a variable; it's a <a href="#variable-pattern">variable pattern</a>.  In fact, the input to a function is in the form of a <em>pattern</em>.  And here's how you would <em>apply</em> (<span title="I'll use both terms interchangeably">or <em>call</em></span>) a function:</p>
+       <pre><code>
+               (fun n -&gt; n + 5) 8
+       </code></pre>
+       <p>...giving you the result</p>
+       <pre><code>
+               13
+       </code></pre>
+       <p>You'll note that this syntax is almost exactly the same as the abstract notation that <a href="#functions-part-1">you saw before</a>.  There's no need for an explicit <q>return</q> statement: the output of a function is the last value that the function generates.</p>
+       <p>In a functional language, functions are <a href="#first-class-functions">first-class</a>.  Be sure that you understand what this means!  Here's a recap of the important points:</p>
+       <ul>
+           <li>A function always takes <em>exactly one</em> input and produces <em>exactly one</em> output</li>
+           <li>The input of a function is in the form of a <em>pattern</em></li>
+           <li>The input is on the left of the <code>-&gt;</code> and the output is on the right of the <code>-&gt;</code></li>
+           <li>A function is an <a href="#functional-style">expression</a></li>
+           <li>The argument passed to a function is separated from the function by a space</li>
+           <li>When you give a function its input (i.e., when you <em>call</em> the function), the result is its output</li>
+           <li>You can do anything with a function that you can do with a value.</li>
+       </ul>
+       <p>Now, you may have seen <a href="#first-class-functions">here</a> that a function can return a function.  Such a function looks like</p>
+       <pre><code>
+               fun t -&gt; fun c -&gt; t + c
+       </code></pre>
+       <p>Let's go analyse this code.  We know that the input is on the left of the <code>-&gt;</code> and the output is on the right.  So the input to the function is <code>t</code>, and when the input is received, the output is <code style="white-space:nowrap">fun c -&gt; t + c</code>.  We analyse this code next.  The input is <code>c</code>, and when the input is received, the output is <code>t + c</code>.</p>
+       <p>The practical effect of this is to give us a way to <em>simulate</em> a function which takes multiple inputs.  Watch what happens when we try this:</p>
+       <pre><code>
+               (fun t -&gt; fun c -&gt; t + c) 3 4
+       </code></pre>
+       <ol>
+           <li>The function is called with the argument <code>3</code>.</li>
+           <li>The data <code>3</code> is matched successfully with the <a href="#variable-pattern">variable pattern</a> <code>t</code>, which takes on the value <code>3</code>.</li>
+           <li>The output is the function <code>fun c -&gt; t + c</code>.</li>
+           <li>The function <code>fun c -&gt; t + c</code> is called with the argument <code>4</code>.</li>
+           <li>The data <code>4</code> is matched successfully with the <a href="#variable-pattern">variable pattern</a> <code>c</code>, which takes on the value <code>4</code>.</li>
+           <li>The output is obtained by evaluating <code>t + c</code>.  The value of <code>t</code> has been established as <code>3</code>, and the value of <code>c</code> has been established as <code>4</code>.  So, the output is <code>7</code>.</li>
+       </ol>
+       <p>Of course, we can do this for as many parameters as we'd like!  That means that we can simulate functions which take any number of arguments.</p>
+       <p>But why not just have functions with multiple inputs?  Well, take a look at step (3) above.  Here's something that we can do with one-input, one-output functions that we can't do with multiple-input functions:</p>
+       <pre><code>
+               let f = fun t -&gt; fun c -&gt; t + c
+               let g = f 35
+               // ... some more code here ...
+               g 12 // result will be 47
+       </code></pre>
+       <p>In the above code, we apply the function bound to <code>f</code> and bind the resulting function to <code>g</code>.  Later on &mdash; perhaps much later, or perhaps in another function entirely &mdash; we can call this function, and get the result.  The ability to create functions that take their inputs from different parts of the program before finally being applied is extraordinarily powerful, and leads to very flexible and interesting ways to express programs.</p>
+       <p>On the other hand, the syntax is <span title="Not a technical term, but I sometimes wish it was!"><em>fugly</em></span>.  Fortunately, F# provides a bit of <a href="#function-sugar">sugar</a> to remove the bitter taste of this.</p>
+   </div>
+   
+   <div id="data" class="step txt">
+       <h1>Data</h1>
+       <p>Data in F# comes in many <a href="#types">types</a>.  Both data and <a href="#functions-part-1">functions</a> can be <a href="#binding">bound</a> to <em>symbols</em> (or <span title="I will use the two terms interchangeably"><em>variables</em></span>), which makes them more convenient to use.</p>
+   </div>
 
     <div id="variable-pattern" class="step txt">
         <h1>Variable patterns</h1>
-        <p>A <em>variable</em> pattern is a variable name.  Valid variable names in F# are almost the same as valid variable names in most other <q>mainstream</q> languages such as C, C#, Java, Python, etc, with one difference: they should not start with a capital letter.  In addition, F# allows variable names to be any sequence of characters, including spaces, as long as the variable name is delimited with <span title="These are backticks.  Usually at the top-left of a keyboard, above the Tab key."><code>``</code></span> marks.  The following are all valid variable patterns:</p>
+        <p>A <em>variable</em> pattern is a variable name.  Valid variable names in F# are almost the same as valid variable names in most other <q>mainstream</q> languages such as C, C#, Java, Python, etc, with one difference: they should not start with a capital letter.  In addition, F# allows variable names to be almost any sequence of characters, including spaces (but excluding quotation marks), as long as the variable name is delimited with <span title="These are backticks.  Usually at the top-left of a keyboard, above the Tab key."><code>``</code></span> marks.  The following are all valid variable patterns:</p>
         <ul>
             <li><code>x</code></li>
             <li><code>abc</code></li>
@@ -476,6 +503,36 @@
         </code></pre>
         <p>Each element is matched by its own pattern, and the length of the list must exactly match the number of <code><u>pattern</u></code>s.  You can see an <a href="#listp-example">example</a> of this, if you'd like.</p>
         <p>The list pattern is less-frequently used than the cons pattern.  However, one list pattern that you will often see is <code>[]</code>, which matches only when the list has no elements.</p>
+    </div>
+
+    <div id="case-pattern" class="step txt">
+        <h1>Case patterns</h1>
+        <p>A <em>case pattern</em> is the name of the case, followed by a pattern to match the associated data (if any).</p>
+        <p>For example, consider the type</p>
+        <pre><code>
+    type EquipmentStatus =
+    | Available
+    | CheckedOut of string
+    | Broken
+    | BeingRepaired of System.DateTime * string
+        </code></pre>
+        <p>&hellip; which is used in the following code:</p>
+        <pre><code>
+    match CheckedOut "S. Brust" with
+    | Available -&gt; "Available, come and get it!"
+    | Broken -&gt; "Broken, sorry :-("
+    | CheckedOut "Batman" -&gt; "Checked out. Probably broken by now."
+    | CheckedOut name -&gt; "Checked out by " + name
+    | Broken (_, fixer) -&gt; "Broken, being fixed by " + fixer
+        </code></pre>
+        <ol>
+            <li>The data that is being matched is a <code>EquipmentStatus</code> discriminated union case, <code>CheckedOut</code>.</li>
+            <li>The pattern <code>Available</code> does not match.</li>
+            <li>The pattern <code>Broken</code> does not match.</li>
+            <li>The pattern <code>CheckedOut</code> matches, but the <a href="#constant-pattern">constant pattern</a> <code>"Batman"</code> does not match.</li>
+            <li>The pattern <code>CheckedOut</code> matches, and the <a href="#variable-pattern">variable pattern</a> <code>name</code> matches and is bound to the value <code>"S.Brust"</code>.  The entire pattern matches, so the associated code is executed.</li>
+            <li>After evaluating the associated code, the result of the <code>match</code> expression is <code>"Checked out by S.Brust"</code>.</li>
+        </ol>
     </div>
 
     <div id="consp-example" class="step txt">
@@ -720,7 +777,8 @@
         </code></pre>
         <p>No data is associated with any of the cases of the <code>WinVersion</code> type.  The data associated with the <code>Windows</code> case of the <code>OS</code> type is a discriminated union of type <code>WinVersion</code>.  There is no data associated with the <code>OSX</code> case of the <code>OS</code> type.  The data associated with the <code>Linux</code> case of the <code>OS</code> type is a <code>string&nbsp;*&nbsp;float</code> tuple which represents the distribution name and kernel version.</p>
         <p>Note that an operating system cannot <em>simultaneously</em> be more than one of these.  To create an <code>OS</code>, you would type the case name and some associated data.  For example, to create an Ubuntu Linux OS running kernel 3.11, you would type in <span title="IMPORTANT REMINDER: The tuple is created by the <code>,</code> operator. The brackets are just for precedence."><code>Linux ("Ubuntu", 3.11)</code></span>.  To create a Windows 95 OS, you would type in <code>Windows Win95</code>.</p>
-        <h2>
+        <hr />
+        <p>That concludes our exploration of data structures.  There are a few more that F# provides (such as <code>Set</code>, <code>Map</code>, interfaces and classes), but <span title="Some for reasons of time, others for reasons of relevance to the functional paradigm">we won't be covering those</span>.  Instead, let's jump right into the thing that gives functional programming its name: <a href="#functions-part-1">functions</a>!</p>
     </div>
 
     <div id="types" class="step txt">
