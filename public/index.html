@@ -696,22 +696,25 @@
                 &vellip;
                 | <u>Case<sub>n</sub></u><span class="optional"> of <u>type<sub>n</sub></u></span>
         </code></pre>
-        <p>The <a href="#ndcd">name</a> of the discriminated union is <code><u>TypeName</u></code>.  To <a href="#ndcd">create</a> a discriminated union of this type, use the name of the <em>case</em> that is being created (e.g. <code><u>Case<sub>1</sub></u></code>), followed by the code necessary to create the <u>data</u> associated with that case (if any).</p>
-        <p>An example may help to see how this works.  Let's use a discriminated union to represent popular desktop operating systems.  The market is split between Windows, OSX, and Linux: <span title="As of December 2014, see <a href=&quot;http://www.netmarketshare.com/operating-system-market-share.aspx?qprid=10&amp;qpcustomd=0&quot;>here</a>">all other desktop operating systems have approximately 0.5% of the market when combined</span>.  So, we'll represent the operating systems with the following discriminated union:</p>
+        <p>The <a href="#ndcd">name</a> of the discriminated union is <code><u>TypeName</u></code>.  Both the <code><u>TypeName</u></code> and each <code><u>Case</u></code> name should start with an uppercase letter To <a href="#ndcd">create</a> a discriminated union of this type, use the name of the <em>case</em> that is being created (e.g. <code><u>Case<sub>1</sub></u></code>), followed by the code necessary to create the <u>data</u> associated with that case (if any).  To <a href="#ndcd">decompose</a> a discriminated union, you would use a <a href="#case-pattern">pattern</a>.</p>
+        <h2>Example</h2>
+        <p>An example may help to see how this works.  Let's use a discriminated union to represent popular desktop operating systems.  The market is split between Windows, OSX, and Linux: <span title="As of December 2014, see <a href=&quot;http://www.netmarketshare.com/operating-system-market-share.aspx?qprid=10&amp;qpcustomd=0&quot;>here</a>">all other desktop operating systems have approximately 0.5% of the market when combined</span>.  So, we'll represent the operating systems with the following two discriminated unions:</p>
         <pre><code>
-                type WinVersions =
-                | ``7``
+                type WinVersion =
+                | Win7
                 | Vista
                 | XP
-                | ``95``
-                | ``3.11``
+                | Win95
+                | Win311
 
                 type OS =
-                | Windows
+                | Windows of WinVersion
                 | OSX
-                | Linux of string * int
+                | Linux of string * float
         </code></pre>
-        <p>Note that an operating system cannot <em>simultaneously</em> be more than one of these.  To create an <code>OS</code>, you would type either <code>Windows</code>, <code>OSX</code>, or <code>Linux</code>.</p>
+        <p>No data is associated with any of the cases of the <code>WinVersion</code> type.  The data associated with the <code>Windows</code> case of the <code>OS</code> type is a discriminated union of type <code>WinVersion</code>.  There is no data associated with the <code>OSX</code> case of the <code>OS</code> type.  The data associated with the <code>Linux</code> case of the <code>OS</code> type is a <code>string&nbsp;*&nbsp;float</code> tuple which represents the distribution name and kernel version.</p>
+        <p>Note that an operating system cannot <em>simultaneously</em> be more than one of these.  To create an <code>OS</code>, you would type the case name and some associated data.  For example, to create an Ubuntu Linux OS running kernel 3.11, you would type in <span title="IMPORTANT REMINDER: The tuple is created by the <code>,</code> operator. The brackets are just for precedence."><code>Linux ("Ubuntu", 3.11)</code></span>.  To create a Windows 95 OS, you would type in <code>Windows Win95</code>.</p>
+        <h2>
     </div>
 
     <div id="types" class="step txt">
