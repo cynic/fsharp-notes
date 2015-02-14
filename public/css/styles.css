@@ -1,3 +1,4 @@
+
 h1 {
    font-weight: bold;
    font-size: 140%;
@@ -45,31 +46,35 @@ samp {
 }
 
 table{
-	 border:1px solid #4c4c4c;
+    border:1px solid #4c4c4c;
     border-radius: 8px;
     border-collapse: collapse;
     border-spacing: 0;
-	 width:100%;
-	 height:100%;
-	 margin:0px;
+    width:100%;
+    height:100%;
+    margin:0px;
     padding:0px;
 }
 tr.highlight {
     background-color:#ffbfff;
 }
 td {
-	 vertical-align:middle;
-	 border:1px solid #4c4c4c;
-	 border-width:0px 1px 1px 0px;
-	 text-align:center;
-	 padding:7px;
+    vertical-align:middle;
+    border:1px solid #4c4c4c;
+    border-width:0px 1px 1px 0px;
+    text-align:center;
+    padding:7px;
 }
 th {
     background: linear-gradient(to bottom, #ed00ed 5%,#ff49ff 100%);
-	 border:1px solid #4c4c4c;
-	 text-align:center;
-	 color:#ffffff;
+    border:1px solid #4c4c4c;
+    text-align:center;
+    color:#ffffff;
 }
 span.optional {
-    opacity: 0.75;
+    opacity: 0.65;
+}
+
+.txt {
+    max-width: 50vw
 }
