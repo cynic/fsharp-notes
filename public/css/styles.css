@@ -76,5 +76,16 @@ span.optional {
 }
 
 .txt {
-    max-width: 50vw
+    max-width: 50vw;
+}
+
+.spoiler {
+    color: transparent;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: 0.4s;
+}
+
+.spoiler:hover {
+    color:inherit;
+    text-shadow: none;
 }

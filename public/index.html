@@ -169,7 +169,7 @@
 
    <div id="function-types" class="step txt">
        <h1>Function types</h1>
-       <p>Let's recall the definition of a <a href="#functions-part-1">function</a>: a function is something that takes one input and produces one output.  We also know that all things in F# have a <a href="#types">type</a> associated with them.  This means that both the input and the output of a function will have a type.  We can therefore represent the type of a function in terms of its input and output!</p>
+       <p>Let's recall the definition of a <a href="#functions-part-1">function</a>: a function is something that takes one input and produces one output.  We also know that all things in F# have a type associated with them.  This means that both the input and the output of a function will have a type.  We can therefore represent the type of a function in terms of its input and output!</p>
        <p>For example, let's take a look at the function</p>
        <pre><code>
                fun p -&gt; p > 15.9
@@ -200,10 +200,7 @@
 
    <div id="generic" class="step txt">
        <h1>Generic types</h1>
-       <p>A symbol which has a <em>generic</em> type is one which can legitimately be any type.  For example, let's consider a very simple function:</p>
-       <pre><code>
-	            <span title="This is called the <em>identity</em> function, FYI">fun x -> x</span>
-       </code></pre>
+       <p>A symbol which has a <em>generic</em> type is one which can legitimately be any type.  For example, let's consider a very simple function: <span title="This is called the <em>identity</em> function, FYI"><code style="white-space:nowrap">fun x -> x</code></p>
        <p>It takes an input, and gives you the same input back.  The type of the input doesn't matter: this function can work with any type.  If you give it a <code>string</code> as input, then the output type is <code>string</code>.  If you give it an <code>int</code> as input, then the output type is <code>int</code>.</p>
        <p>The word <q>generic</q> means <q>works with any type</q>.  It's very important to understand what <q>generic</q> <em>doesn't</em> mean, too.</p>
        <ul>
@@ -236,7 +233,7 @@
    </div>
 
    <div id="ti-inconsistent" class="step txt">
-       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <p>Given the code</p>
        <pre><code>
                (fun m -&gt; m * 2) "kitty"
        </code></pre>
@@ -253,7 +250,7 @@
    </div>
 
    <div id="ti-literal" class="step txt">
-       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <p>Given the code</p>
        <pre><code>
                fun k -&gt; k / 4.0
        </code></pre>
@@ -269,7 +266,7 @@
    </div>
 
    <div id="ti-function" class="step txt">
-       <p>(If you haven't read about <a href="#functions-part-1">functions</a>, you should do that now!).  Given the code</p>
+       <p>Given the code</p>
        <pre><code>
                (fun m -&gt; m+m) "kitty"
        </code></pre>
@@ -287,7 +284,7 @@
    </div>
 
    <div id="ti-annotation" class="step txt">
-       <p>(If you haven't read about <a href="#functions-part-1">functions</a> and <a href="#type-annotations">type annotations</a>, you should do that now!).  Given the code</p>
+       <p>Given the code</p>
        <pre><code>
                fun (m:float) -&gt; m+m
        </code></pre>
@@ -370,6 +367,7 @@
            <li>The argument passed to a function is separated from the function by a space</li>
            <li>When you give a function its input (i.e., when you <em>call</em> the function), the result is its output</li>
            <li>You can do anything with a function that you can do with a value.</li>
+           <li>A function has a <a href="#function-types">type</a>.</li>
        </ul>
        <p>Now, you may have seen <a href="#first-class-functions">here</a> that a function can return a function.  Such a function looks like</p>
        <pre><code>
@@ -398,6 +396,54 @@
        </code></pre>
        <p>In the above code, we apply the function bound to <code>f</code> and bind the resulting function to <code>g</code>.  Later on &mdash; perhaps much later, or perhaps in another function entirely &mdash; we can call this function, and get the result.  The ability to create functions that take their inputs from different parts of the program before finally being applied is extraordinarily powerful, and leads to very flexible and interesting ways to express programs.</p>
        <p>On the other hand, the syntax is <span title="Not a technical term, but I sometimes wish it was!"><em>fugly</em></span>.  Fortunately, F# provides a bit of <a href="#function-sugar">sugar</a> to remove the bitter taste of this.</p>
+   </div>
+
+   <div id="function-sugar" class="step txt">
+       <h1>Function sugar</h1>
+       <p>F# provides <em>syntactic sugar</em> that lets you write one-input, one-output functions <em>as if</em> they took multiple inputs.  They don't, of course; it merely appears that they do.  Here's how it works: instead of writing</p>
+       <pre><code>
+               fun a -&gt; fun b -&gt; a - b
+       </code></pre>
+       <p>&hellip; you can write</p>
+       <pre><code>
+               fun a b -&gt; a - b
+       </code></pre>
+       <p>These two are <em>exactly equivalent</em>: there is no semantic difference whatsoever between them.  The second form looks better, and it is the form that you will be using throughout this course.  Make sure that you don't forget what the <q>sugared</q> form actually is, though.</p>
+       <h2>Moar sugar</h2>
+       <p>Going a step further, you will often find yourself assigning a name to a function, e.g.</p>
+       <pre><code>
+               let bleh = fun a b -&gt; a - b
+       </code></pre>
+       <p>The language provides a <q>sugared</q> form to make this easier, too.  Instead of the above, you can write</p>
+       <pre><code>
+               let bleh a b -&gt; a - b
+       </code></pre>
+       <p>These two forms, once again, are equivalent.  You'll be using (and seeing) the prettier syntax from now on.</p>
+       <hr />
+       <p>We've discussed almost all of the functional fundamentals that this part of the module will introduce you to.  However, the astute reader will notice that we haven't discussed one of the very basic things that we tend to do with computers: <em>looping</em>.  Now that we know about functions, we can do that.  Next up: <a href="#rec">the <code>rec</code> keyword</a>.</p>
+   </div>
+
+   <div id="rec" class="step txt">
+       <h1>The <code>rec</code> keyword</h1>
+       <p>The <code>rec</code> keyword is used to make a name available for use <em>within the scope of that name</em>.  Consider the following code:</p>
+       <pre><code>
+               let f b = f b
+       </code></pre>
+       <p>F# won't allow this because inside the body of <code>f</code>, the symbol <code>f</code> is undefined.  The <code>f</code> symbol can only be seen by code after the <code>let</code> statement which is at the same nesting level.</p>
+       <p>However, adding the <code>rec</code> keyword directly after the <code>let</code> keyword allows the <code>f</code> symbol to be seen within the code which defines the <code>f</code> symbol:</p>
+       <pre><code>
+               let rec f b = f b
+       </code></pre>
+       <p>This compiles and works: when you call <code>f</code> with any input, it will call itself infinitely and the program will not terminate.  In other words, we will <em>loop</em> through the body of <code>f</code> forever &mdash; an infinite loop!  We achieve this looping by having functions call themselves (i.e., via <em><strong>rec</strong>ursion</em>).</p>
+       <p>Infinite loops aren't particularly useful, though.  Here's a slightly more useful example that adds up numbers in a list:</p>
+       <pre><code>
+               let f x =
+                  match x with
+                  | [] -&gt; 0
+                  | num::rest -&gt; num + f rest
+       </code></pre>
+       <p>Study how this code works until you can see that it really does work.  It takes a little bit of time to get used to thinking recursively, but you'll have to make the attempt: although F# does support explicit looping constructs such as <code>for</code>, <code>while</code>, etc, we won't be using those.  The functional way is to use recursion to achieve iteration.  Reading F# code and some practice should help a lot with this.</p>
+       <p>The last basic language construct that I'd like to introduce you to is an additional primitive type that F# has: the <a href="#unit-type"><code>unit</code></a> type.</p>
    </div>
    
    <div id="data" class="step txt">
@@ -797,6 +843,39 @@
         <h1>The <code>unit</code> type</h1>
         <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
         <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
+        <h2>Example</h2>
+        <p>Let's say that you have a function that takes a username and password, and authenticates the user to a server on the network.</p>
+        <pre><code>
+                let authenticate user pass =
+                   doAuthentication user pass
+        </code></pre>
+        <p>The <code>doAuthentication</code> function, and consequently the <code>authenticate</code> function, outputs <code>()</code>; the <span title="Sadly, there are real-world APIs that work this way :-(">only way to check whether it succeeded is by trying another request and seeing if an error occurs</span>.  Sometimes the server will go down, or network troubles will happen, or gremlins will cause hardware to malfunction.  Whatever the reason, reauthentication is occasionally necessary.  The user has already put in their username and password once; it would annoy them to ask for their details again.  Instead, your system should reauthenticate them silently as-needed.  Take a moment to think about how you might do that, then hover over the blurred text to see a way in which a functional programmer might approach it.</p>
+        <div class="spoiler" href="#unit-type">
+            <p>At the point where the authentication occurs, the user has already given us a username and password.  Therefore, all that we need to do is store the data somewhere and use it to reauthenticate when necessary.  In an object-oriented world, we might store the username and password somewhere in memory, and then retrieve the values to call authenticate again when we need to.  In the functional paradigm, you'd use a function to do this instead.  Let's change the <code>authenticate</code> function to output a function which will reauthenticate us.</p>
+            <pre><code>
+                    let authenticate user pass =
+                       doAuthentication user pass
+                       fun () -&gt; doAuthentication user pass
+            </code></pre>
+            <p>By passing a function back, we are able to delay using the functionality until we actually need to use it.  Note that we need to be able to call the <q>reauthentication</q> function, but the function already has all the input that it requires.  However, a function takes one input and produces one output, so we must give it <em>something</em> as input.  In this case, passing it a <q>useless</q> input is a sensible thing to do, so we specify the input using the <a href="#constant-pattern">constant pattern</a> <code>()</code>.</p>
+            <p>We would typically pass this function to the function that makes requests, and whenever we need to, call it to reauthenticate ourselves.  So our use might look something like:</p>
+            <pre><code>
+                    let makeRequest reauthenticate &hellip; =
+                       &vellip; some code here
+                       // whenever a request fails:
+                       reauthenticate ()
+                       &vellip; some more code here
+
+                    &vellip;
+
+                    let f = authenticate userInput passInput
+                    &vellip;
+                    makeRequest f &hellip;
+            </code></pre>
+            <p>Of course, in an actual system, you might want more functionality.  For instance, you might want to only make a certain number of reauthentication attempts before giving up.  Adding in such functionality is reasonably easy in the functional paradigm, and makes for an interesting exercise for the reader.  Can you see how it might be done?</p>
+        </div>
+        <hr />
+       <p>Now that you know about the <code>unit</code> type, you know all about the fundamentals of F#.  On the way to here, you should also have learned about <a href="#type-inference">type inference</a>, <a href="#type-annotations">type annotations</a>, <a href="#function-types">function types</a>, and <a href="#generic">generic types</a>.  If you've skipped one of those links, now's the time to catch up.</p>
     </div>
     
     <div id="ndcd" class="step txt">
