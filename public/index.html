@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=1024" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>Programming Without Horsefaeces</title>
+    <title>F#ing programming basics</title>
 
    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
@@ -192,12 +192,6 @@
        <p>Note that the annotation occurs where the variable is defined, and not where it is used.</p>
    </div>
 
-   <div id="lists-todo" class="step txt">
-       <h1>Lists</h1>
-       <p>The built-in list type in F# is a singly-linked list with special syntax to make creation and use easy.</p>
-       
-   </div>
-
    <div id="generic" class="step txt">
        <h1>Generic types</h1>
        <p>A symbol which has a <em>generic</em> type is one which can legitimately be any type.  For example, let's consider a very simple function: <span title="This is called the <em>identity</em> function, FYI"><code style="white-space:nowrap">fun x -> x</code></p>
@@ -313,7 +307,7 @@
          </li>
          <li><em>Expressions</em>: the vast majority of code in a functional program is written as expressions, not statements.  The difference between an expression and a statement is that an expression generates a value, and a statement does not.  For example, in C#, <code>2+7</code> is an expression and <code>while (false) { }</code> is a statement.  We can <span title="<code>int x = 2+7;</code> is legal">assign the former to a variable</span> because it generates a value, but we <span title="<code>void x = while (false) { }</code> is illegal">cannot do this for the latter</span> because there is no value generated that could be assigned to a variable.</li>
       </ul>
-      <p>It seems obvious that first-class functions are better than the <q>conventional</q> methods and functions that you've seen so far in your Computer Science courses.  First-class functions can do everything that <q>ordinary</q> functions can do, and more &mdash; they're like <span title="Not to be taken as an endorsement of steroid use.  If you want medical advice, go and see a doctor, not a Computer Scientist.">functions on steroids</span>.  But what about <em>purity</em> and <em>immutability</em>?  <a href="#fp-benefits">Why are those useful?</a></p>
+      <p>These characteristics lead to a style of programming that is more expressive, more flexible, and arguably more readable, maintainable, and powerful than a <q>mainstream</q> object-oriented style.  The notes after this basic set of notes will go through some functional-programming idioms, and you can make your own mind up about how useful the style is.</p>
    </div>
 
    <div id="functions-part-1" class="step txt">
@@ -419,6 +413,17 @@
                let bleh a b -&gt; a - b
        </code></pre>
        <p>These two forms, once again, are equivalent.  You'll be using (and seeing) the prettier syntax from now on.</p>
+       <h2>Precedence</h2>
+       <p>Function application has <a href="https://msdn.microsoft.com/en-us/library/dd233228.aspx" target="_new">higher precedence than almost any other operator or expression</a>.  This is similar to the precedence of operators in <a href="https://msdn.microsoft.com/en-us/library/aa691323%28v=vs.71%29.aspx" target="_new">C#</a>, for example.  However, since function application in F# is done without parentheses, the way an expression looks may be deceptive until you get used to it.</p>
+       <p>In C#, for example, the precedence of a statement such as</p>
+       <pre><code>
+               int k = i + f(j,p);
+       </code></pre>
+       <p>&hellip; is obvious to most programmers: the <code>i</code> is evaluated, then <code>f(j,p)</code> is evaluated, and then the addition is done.  In F# the precedence is the same, but the syntax doesn't make it as obvious:</p>
+       <pre><code>
+               let k = i + f j p
+       </code></pre>
+       <p>Again, the <code>i</code> and <code>f j p</code> expressions are evaluated before the addition is done.  As you get used to the lack of parentheses, the precedence will start to feel natural again.  Reading F# code will help with this.</p>
        <hr />
        <p>We've discussed almost all of the functional fundamentals that this part of the module will introduce you to.  However, the astute reader will notice that we haven't discussed one of the very basic things that we tend to do with computers: <em>looping</em>.  Now that we know about functions, we can do that.  Next up: <a href="#rec">the <code>rec</code> keyword</a>.</p>
    </div>
@@ -446,11 +451,6 @@
        <p>The last basic language construct that I'd like to introduce you to is an additional primitive type that F# has: the <a href="#unit-type"><code>unit</code></a> type.</p>
    </div>
    
-   <div id="data" class="step txt">
-       <h1>Data</h1>
-       <p>Data in F# comes in many <a href="#types">types</a>.  Both data and <a href="#functions-part-1">functions</a> can be <a href="#binding">bound</a> to <em>symbols</em> (or <span title="I will use the two terms interchangeably"><em>variables</em></span>), which makes them more convenient to use.</p>
-   </div>
-
     <div id="variable-pattern" class="step txt">
         <h1>Variable patterns</h1>
         <p>A <em>variable</em> pattern is a variable name.  Valid variable names in F# are almost the same as valid variable names in most other <q>mainstream</q> languages such as C, C#, Java, Python, etc, with one difference: they should not start with a capital letter.  In addition, F# allows variable names to be almost any sequence of characters, including spaces (but excluding quotation marks), as long as the variable name is delimited with <span title="These are backticks.  Usually at the top-left of a keyboard, above the Tab key."><code>``</code></span> marks.  The following are all valid variable patterns:</p>
@@ -707,7 +707,7 @@
             <li>The <span title="Remember: expressions return values, and <code>match</code> is an <em>expression</em>, not a statement!">value of the <code>match</code> expression</span> is the last value generated by <code><u>code</u></code>.</li>
         </ol>
         <p>If no pattern matches, then a <samp>MatchFailureException</samp> is thrown.  You can see an <a href="#match-example">example</a> of how this all works, if you'd like.</p>
-        <p>Now that we know about <code>match</code> expressions, we have a programming construct that will let us <a href="#ndcd">explore</a> patterns and <span title="Types made up of different types. For example, in C#, a class is a composite type.">composite types</span> in F#.  These are used pervasively throughout the language.  We'll start with one of the simpler data-types, the <a href="#lists">list</a>, and then move on to <span title="Tuples, records, and discriminated unions">the rest</span>.</p> 
+        <p>Now that we know about <code>match</code> expressions, we have a programming construct that will let us explore patterns and <span title="Types made up of different types. For example, in C#, a class is a composite type.">composite types</span> in F#.  These are used pervasively throughout the language.  We'll start with one of the simpler data-types, the <a href="#lists">list</a>, and then move on to <span title="Tuples, records, and discriminated unions">the rest</span>.</p> 
     </div>
 
     <div id="lists" class="step txt">
@@ -824,13 +824,12 @@
         <p>No data is associated with any of the cases of the <code>WinVersion</code> type.  The data associated with the <code>Windows</code> case of the <code>OS</code> type is a discriminated union of type <code>WinVersion</code>.  There is no data associated with the <code>OSX</code> case of the <code>OS</code> type.  The data associated with the <code>Linux</code> case of the <code>OS</code> type is a <code>string&nbsp;*&nbsp;float</code> tuple which represents the distribution name and kernel version.</p>
         <p>Note that an operating system cannot <em>simultaneously</em> be more than one of these.  To create an <code>OS</code>, you would type the case name and some associated data.  For example, to create an Ubuntu Linux OS running kernel 3.11, you would type in <span title="IMPORTANT REMINDER: The tuple is created by the <code>,</code> operator. The brackets are just for precedence."><code>Linux ("Ubuntu", 3.11)</code></span>.  To create a Windows 95 OS, you would type in <code>Windows Win95</code>.</p>
         <hr />
-        <p>That concludes our exploration of data structures.  There are a few more that F# provides (such as <code>Set</code>, <code>Map</code>, interfaces and classes), but <span title="Some for reasons of time, others for reasons of relevance to the functional paradigm">we won't be covering those</span>.  Instead, let's jump right into the thing that gives functional programming its name: <a href="#functions-part-1">functions</a>!</p>
+        <p>That concludes our exploration of data structures; here is a <a href="#composite-types">single-page recap</a>.  There are a few more that F# provides (such as <code>Set</code>, <code>Map</code>, interfaces and classes), but <span title="Some for reasons of time, others for reasons of relevance to the functional paradigm">we won't be covering those</span>.  Instead, let's jump right into the thing that gives functional programming its name: <a href="#functions-part-1">functions</a>!</p>
     </div>
 
-    <div id="types" class="step txt">
-        <h1>Types</h1>
-        <p>F# is a statically-typed, strongly-typed language (<span title="For example, <a href=&quot;http://en.wikipedia.org/wiki/Lisp_(programming_language)&quot; target=&quot;_new&quot;>Lisp</a> and <a href=&quot;http://en.wikipedia.org/wiki/Erlang_(programming_language)&quot; target=&quot;_new&quot;>Erlang</a> are functional languages that are dynamically-typed and strongly-typed.">not all functional programming languages are like this!</span>).   This means that in F#, everything has a type which is known at compile-time.  You're already familiar with some of these types (<code>int</code>, <code>string</code>, <span title="This is called <code>double</code> in C#"><code>float</code></span>, <code>bool</code>, and <code>char</code>, for example).  Unlike in C# or Java, types are usually <a href="#type-inference">inferred</a>, so you (usually!) don't have to specify the type of anything explicitly.  Above and beyond the usual basic types, there is also the <a href="#unit-type"><code>unit</code> type</a>; <a href="#functions-part-1">functions</a> have <a href="#function-types">types</a>; and types can be <a href="#generic">generic</a> (i.e., they can be anything as long as it makes sense within the program context).</p>
-        <p>All of the above <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#ndcd">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
+    <div id="composite-types" class="step txt">
+        <h1>Composite Types: a recap</h1>
+        <p>All of the types we've learned about <span title="<img style=&quot;width:50%;float:left;margin-right:1ex&quot; src=&quot;http://www.e-action.us/wsfilmfestival/images/captplanet.jpg&quot; /><q>When your types combine, ...</q>">can be combined to form</span> larger <em>composite types</em>.  A class in C# is an example of a <em>composite</em> type: it is a type which contains other types.  F# supports <span title="...including objects, but we won't be using objects in this module at all">a wide variety of composite types</span> which are useful in a variety of situations.  Each type has <a href="#ndcd">a way of being defined, a way of being created, and ways of being decomposed</a>.</p>
         <ul>
             <li>To represent a group of data where each element has the <em>same</em> type, you would use a <a href="#lists">list</a>.  Example use-case: representing the names of every member of the class.  (You could also use an array, and F# supports arrays natively; but lists are a more functional data structure, so we'll be using them instead).</li>
             <li>To represent a group of data where elements have <em>different</em> types, you would use a <a href="#tuples">tuple</a> or a <a href="#records">record</a>.  Example use-case: representing the name, height, and weight of every member of the class.</li>
