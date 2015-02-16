@@ -115,9 +115,11 @@
                Mogrify(myArray);
                Console.WriteLine(myArray[2]);
        </code></pre>
-       <p>Read through the code, and then answer this question: what will be printed to the console?</p>
+       <p>Read through the code, and then answer this question: can you tell what will be printed to the console?  When you've thought about it, hover over the blurred text below to see the correct answer.</p>
        <hr />
-       <p>If you said that it would print out <code>5</code>, then you're incorrect.  The fact is that we can't know what it prints out: the <code>Mogrify</code> method could do anything with <code>myArray</code>, and our understanding of this piece of code is dependent upon our understanding of <code>Mogrify</code>.  In turn, our understanding of <code>Mogrify</code> is likely dependent on our understanding of other methods and objects (and their associated state), which is dependent upon our understanding of yet more methods and objects and <span title="&hellip;lions and tigers and bears&hellip;">&hellip;</span>!</p>
+       <div class="spoiler">
+           <p>The correct answer is <q>No</q>.  If you thought that it would print out <code>5</code>, then you're incorrect.  The fact is that we can't know what it prints out: the <code>Mogrify</code> method could do anything with <code>myArray</code>, and our understanding of this piece of code is dependent upon our understanding of <code>Mogrify</code>.  In turn, our understanding of <code>Mogrify</code> is likely dependent on our understanding of other methods and objects (and their associated state), which is dependent upon our understanding of yet more methods and objects and <span title="&hellip;lions and tigers and bears&hellip;">&hellip;</span>!</p>
+       </div>
        <p>By contrast, take a look at this roughly-equivalent F# code:</p>
        <pre><code>
                let myList = [1;3;5;7;9]
