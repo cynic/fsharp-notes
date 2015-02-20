@@ -879,12 +879,8 @@
         </ul>
         <p>Of course, you can use composite types to create other composite types!  For example, you can make a list of discriminated unions, where each discriminated union has a tuple or record associated with it, and each record has a field that is a discriminated union, which might be associated with a list &hellip; and so on.</p>
     </div>
-    
-    <div id="unit-type" class="step txt">
-        <h1>The <code>unit</code> type</h1>
-        <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
-        <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.</p>
-        <h2>Example</h2>
+
+    <div id="unit-type-example" class="step txt">
         <p>Let's say that you have a function that takes a username and password, and authenticates the user to a server on the network.</p>
         <pre><code>
                 let authenticate user pass =
@@ -914,8 +910,13 @@
                     makeRequest f &hellip;
             </code></pre>
             <p>Of course, in an actual system, you might want more functionality.  For instance, you might want to only make a certain number of reauthentication attempts before giving up.  Adding in such functionality is reasonably easy in the functional paradigm, and makes for an interesting exercise for the reader.  Can you see how it might be done?</p>
-        </div>
-        <hr />
+        </div>        
+    </div>
+    
+    <div id="unit-type" class="step txt">
+        <h1>The <code>unit</code> type</h1>
+        <p>The <code>unit</code> type has a single possible value: <code>()</code> .  If you think this is strange, it's not much stranger than the <code>bool</code> type only having two possible values: <code>true</code> and <code>false</code>.</p>
+        <p>A <code>()</code> value is often supplied to <a href="#functions-part-1">functions</a> where the input is disregarded, and it is often the output of functions where the output is irrelevant.  Aside from these cases, you will rarely see a <code>()</code> being used in functional code.  You can see an example of <code>()</code> being used <a href="#unit-type-example">here</a>.</p>
        <p>Now that you know about the <code>unit</code> type, you know all about the fundamentals of F#.  On the way to here, you should also have learned about <a href="#type-inference">type inference</a>, <a href="#type-annotations">type annotations</a>, <a href="#function-types">function types</a>, and <a href="#generic">generic types</a>.  If you've skipped one of those links, now's the time to catch up.</p>
     </div>
     
